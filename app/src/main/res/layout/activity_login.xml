@@ -1,0 +1,162 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:id="@+id/login"
+    android:background="@color/fundo">
+
+    <!-- Guidelines -->
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/guidelineBordaTopo"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_begin="200dp" />
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/guidelineBordaEsquerda"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintGuide_begin="16dp" />
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/guidelineBordaDireita"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintGuide_end="16dp" />
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/guidelineBordaFim"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_end="200dp" />
+
+
+    <!-- Logo e Título -->
+    <ImageView
+        android:id="@+id/imageViewLogo"
+        android:layout_width="104dp"
+        android:layout_height="103dp"
+        app:layout_constraintBottom_toTopOf="@+id/textTitulo"
+        app:layout_constraintEnd_toStartOf="@+id/guidelineBordaDireita"
+        app:layout_constraintStart_toStartOf="@+id/guidelineBordaEsquerda"
+        app:layout_constraintTop_toTopOf="@+id/guidelineBordaTopo"
+        app:srcCompat="@drawable/icone" />
+
+    <TextView
+        android:id="@+id/textTitulo"
+        android:layout_width="215dp"
+        android:layout_height="42dp"
+        android:fontFamily="@font/poppins_semibold"
+        android:text="SafeTrace"
+        android:textAlignment="center"
+        android:textColor="@color/primaria"
+        android:textSize="28sp"
+        app:layout_constraintEnd_toStartOf="@+id/guidelineBordaDireita"
+        app:layout_constraintStart_toStartOf="@+id/guidelineBordaEsquerda"
+        app:layout_constraintTop_toBottomOf="@+id/imageViewLogo"
+        app:layout_constraintBottom_toTopOf="@+id/buttonBordaLogin"/>
+
+
+    <!-- Login -->
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/buttonBordaLogin"
+        android:layout_width="270dp"
+        android:layout_height="80dp"
+        android:layout_marginTop="8dp"
+        android:backgroundTint="@android:color/transparent"
+        android:fontFamily="@font/poppins"
+        android:stateListAnimator="@null"
+        android:text="                        "
+        android:textColor="@color/primaria"
+        app:cornerRadius="6dp"
+        app:layout_constraintBottom_toTopOf="@+id/buttonBordaSenha"
+        app:layout_constraintEnd_toStartOf="@+id/guidelineBordaDireita"
+        app:layout_constraintHorizontal_bias="0.495"
+        app:layout_constraintStart_toStartOf="@+id/guidelineBordaEsquerda"
+        app:layout_constraintTop_toBottomOf="@+id/textTitulo"
+        app:rippleColor="@color/primaria"
+        app:strokeColor="@color/primaria"
+        app:strokeWidth="2dp" />
+
+    <EditText
+        android:id="@+id/editTextLogin"
+        android:layout_width="240dp"
+        android:layout_height="60dp"
+        android:ems="10"
+        android:fontFamily="@font/poppins"
+        android:inputType="text"
+        android:text="Login"
+        android:textAlignment="center"
+        android:textColor="@color/primaria"
+        android:background="@android:color/transparent"
+        android:textSize="18sp"
+        app:layout_constraintBottom_toBottomOf="@+id/buttonBordaLogin"
+        app:layout_constraintEnd_toStartOf="@+id/guidelineBordaDireita"
+        app:layout_constraintHorizontal_bias="0.496"
+        app:layout_constraintStart_toStartOf="@+id/guidelineBordaEsquerda"
+        app:layout_constraintTop_toTopOf="@+id/buttonBordaLogin"
+        app:layout_constraintVertical_bias="0.6" />
+
+
+    <!-- Senha -->
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/buttonBordaSenha"
+        android:layout_width="270dp"
+        android:layout_height="80dp"
+        android:layout_marginTop="2dp"
+        android:backgroundTint="@android:color/transparent"
+        android:fontFamily="@font/poppins"
+        android:stateListAnimator="@null"
+        android:text="                        "
+        android:textColor="@color/primaria"
+        app:cornerRadius="6dp"
+        app:layout_constraintEnd_toStartOf="@+id/guidelineBordaDireita"
+        app:layout_constraintHorizontal_bias="0.495"
+        app:layout_constraintStart_toStartOf="@+id/guidelineBordaEsquerda"
+        app:layout_constraintTop_toBottomOf="@+id/buttonBordaLogin"
+        app:rippleColor="@color/primaria"
+        app:strokeColor="@color/primaria"
+        app:strokeWidth="2dp" />
+
+    <EditText
+        android:id="@+id/editTextSenha"
+        android:layout_width="240dp"
+        android:layout_height="60dp"
+        android:ems="10"
+        android:fontFamily="@font/poppins"
+        android:inputType="textPassword"
+        android:hint="Senha"
+        android:textAlignment="center"
+        android:textColor="@color/primaria"
+        android:textColorHint="@color/primaria"
+        android:background="@android:color/transparent"
+        android:textSize="18sp"
+        app:layout_constraintBottom_toBottomOf="@+id/buttonBordaSenha"
+        app:layout_constraintEnd_toEndOf="@+id/buttonBordaSenha"
+        app:layout_constraintStart_toStartOf="@+id/buttonBordaSenha"
+        app:layout_constraintTop_toTopOf="@+id/buttonBordaSenha" />
+
+
+    <!-- Cadastre-se -->
+    <TextView
+        android:id="@+id/textViewCadastro"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="4dp"
+        android:fontFamily="@font/poppins"
+        android:text="Cadastre-se aqui"
+        android:textAlignment="center"
+        android:textColor="@color/cinza"
+        android:textSize="14sp"
+        app:layout_constraintBottom_toTopOf="@+id/guidelineBordaFim"
+        app:layout_constraintEnd_toStartOf="@+id/guidelineBordaDireita"
+        app:layout_constraintStart_toStartOf="@+id/guidelineBordaEsquerda"
+        app:layout_constraintTop_toBottomOf="@+id/buttonBordaSenha" />
+</androidx.constraintlayout.widget.ConstraintLayout>

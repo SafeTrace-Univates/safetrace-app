@@ -1,0 +1,223 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/main"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".MainActivity">
+
+    <!-- Guidelines -->
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/guidelineBordaTopo"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_begin="16dp" />
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/guidelineBordaEsquerda"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintGuide_begin="16dp" />
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/guidelineBordaDireita"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintGuide_end="16dp" />
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/guidelineLogo"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_begin="61dp" />
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/guidelineEmergencia"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_begin="340dp" />
+
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/guidelineBordaFim"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_end="16dp" />
+
+    <!-- Logo e Título -->
+    <ImageView
+        android:id="@+id/imageViewLogo"
+        android:layout_width="38dp"
+        android:layout_height="70dp"
+        android:layout_marginTop="16dp"
+        app:layout_constraintBottom_toTopOf="@+id/guidelineLogo"
+        app:layout_constraintStart_toStartOf="@+id/guidelineBordaEsquerda"
+        app:layout_constraintTop_toTopOf="parent"
+        app:srcCompat="@drawable/icone" />
+
+    <TextView
+        android:id="@+id/textTitulo"
+        android:layout_width="173dp"
+        android:layout_height="23dp"
+        android:layout_marginStart="4dp"
+        android:fontFamily="@font/poppins_semibold"
+        android:text="SafeTrace"
+        android:textColor="@color/primaria"
+        android:textSize="20sp"
+        app:layout_constraintBottom_toTopOf="@+id/guidelineLogo"
+        app:layout_constraintStart_toEndOf="@+id/imageViewLogo"
+        app:layout_constraintTop_toTopOf="@+id/guidelineBordaTopo" />
+
+    <ImageView
+        android:id="@+id/imageViewMenu"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintBottom_toTopOf="@+id/guidelineLogo"
+        app:layout_constraintEnd_toStartOf="@+id/guidelineBordaDireita"
+        app:layout_constraintTop_toTopOf="@+id/guidelineBordaTopo"
+        app:srcCompat="@drawable/baseline_dehaze_24" />
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/buttonEmergencia"
+        android:layout_width="343dp"
+        android:layout_height="200dp"
+        android:backgroundTint="@color/primaria"
+        android:fontFamily="@font/poppins_semibold"
+        android:stateListAnimator="@null"
+        android:text="Emergência"
+        android:textColor="@color/secundaria"
+        android:textSize="28sp"
+        app:cornerRadius="6dp"
+        app:layout_constraintBottom_toTopOf="@+id/guidelineEmergencia"
+        app:layout_constraintEnd_toStartOf="@+id/guidelineBordaDireita"
+        app:layout_constraintStart_toStartOf="@+id/guidelineBordaEsquerda"
+        app:layout_constraintTop_toTopOf="@+id/guidelineLogo"
+        app:rippleColor="@color/secundaria"
+        app:strokeColor="@color/secundaria"
+        app:strokeWidth="4dp" />
+
+    <!-- ScrollView Contatos de emergência -->
+    <ScrollView
+        android:id="@+id/scrollViewContatosEmergencia"
+        android:layout_width="310dp"
+        android:layout_height="350dp"
+        app:layout_constraintBottom_toTopOf="@+id/guidelineBordaFim"
+        app:layout_constraintEnd_toStartOf="@+id/guidelineBordaDireita"
+        app:layout_constraintStart_toStartOf="@+id/guidelineBordaEsquerda"
+        app:layout_constraintTop_toTopOf="@+id/guidelineEmergencia"
+        app:layout_constraintVertical_bias="0.479">
+
+        <LinearLayout
+            android:id="@+id/layoutContatosEmergencia"
+            android:layout_width="310dp"
+            android:layout_height="wrap_content"
+            android:gravity="center_horizontal"
+            android:orientation="vertical"
+            android:paddingTop="4dp"
+            android:paddingBottom="4dp">
+
+            <!-- botões de emergência -->
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/buttonPoliciaMilitar"
+                android:layout_width="250dp"
+                android:layout_height="61dp"
+                android:layout_marginTop="8dp"
+                android:layout_marginBottom="8dp"
+                android:backgroundTint="@android:color/transparent"
+                android:fontFamily="@font/poppins"
+                android:stateListAnimator="@null"
+                android:text="Polícia Militar"
+                android:textAllCaps="false"
+                android:textColor="@color/cinza"
+                android:textSize="18sp"
+                app:cornerRadius="6dp"
+                app:rippleColor="@color/cinza"
+                app:strokeColor="@color/cinza"
+                app:strokeWidth="2dp" />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/buttonDefesaMulher"
+                android:layout_width="250dp"
+                android:layout_height="61dp"
+                android:layout_marginTop="8dp"
+                android:layout_marginBottom="8dp"
+                android:backgroundTint="@android:color/transparent"
+                android:fontFamily="@font/poppins"
+                android:stateListAnimator="@null"
+                android:text="Defesa da Mulher"
+                android:textAllCaps="false"
+                android:textColor="@color/cinza"
+                android:textSize="18sp"
+                app:cornerRadius="6dp"
+                app:rippleColor="@color/cinza"
+                app:strokeColor="@color/cinza"
+                app:strokeWidth="2dp" />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/buttonSamu"
+                android:layout_width="250dp"
+                android:layout_height="61dp"
+                android:layout_marginTop="8dp"
+                android:layout_marginBottom="8dp"
+                android:backgroundTint="@android:color/transparent"
+                android:fontFamily="@font/poppins"
+                android:stateListAnimator="@null"
+                android:text="SAMU"
+                android:textAllCaps="false"
+                android:textColor="@color/cinza"
+                android:textSize="18sp"
+                app:cornerRadius="6dp"
+                app:rippleColor="@color/cinza"
+                app:strokeColor="@color/cinza"
+                app:strokeWidth="2dp" />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/buttonBombeiros"
+                android:layout_width="250dp"
+                android:layout_height="61dp"
+                android:layout_marginTop="8dp"
+                android:layout_marginBottom="8dp"
+                android:backgroundTint="@android:color/transparent"
+                android:fontFamily="@font/poppins"
+                android:stateListAnimator="@null"
+                android:text="Bombeiros"
+                android:textAllCaps="false"
+                android:textColor="@color/cinza"
+                android:textSize="18sp"
+                app:cornerRadius="6dp"
+                app:rippleColor="@color/cinza"
+                app:strokeColor="@color/cinza"
+                app:strokeWidth="2dp" />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/buttonPoliciaCivil"
+                android:layout_width="250dp"
+                android:layout_height="61dp"
+                android:layout_marginTop="8dp"
+                android:layout_marginBottom="8dp"
+                android:backgroundTint="@android:color/transparent"
+                android:fontFamily="@font/poppins"
+                android:stateListAnimator="@null"
+                android:text="Polícia Cívil"
+                android:textAllCaps="false"
+                android:textColor="@color/cinza"
+                android:textSize="18sp"
+                app:cornerRadius="6dp"
+                app:rippleColor="@color/cinza"
+                app:strokeColor="@color/cinza"
+                app:strokeWidth="2dp" />
+
+        </LinearLayout>
+    </ScrollView>
+
+
+
+</androidx.constraintlayout.widget.ConstraintLayout>

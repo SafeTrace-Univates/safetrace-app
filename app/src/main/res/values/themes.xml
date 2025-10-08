@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:tools="http://schemas.android.com/tools">
+
+    <!-- Tema principal do app -->
+    <style name="Theme.SafeTrace" parent="Theme.MaterialComponents.DayNight.NoActionBar">
+        <!-- Cor primária (usada em botões, bordas, inputs) -->
+        <item name="colorPrimary">@color/primaria</item>
+        <item name="colorPrimaryVariant">@color/primaria_variacao</item>
+
+        <!-- Cor secundária (para ênfase, FAB, switches etc.) -->
+        <item name="colorSecondary">@color/secundaria</item>
+        <item name="colorSecondaryVariant">@color/secundaria_variacao</item>
+
+        <!-- Fundo padrão da Activity -->
+        <item name="android:colorBackground">@color/fundo</item>
+
+        <!-- Texto em superfícies claras -->
+        <item name="android:textColorPrimary">@color/black</item>
+        <item name="android:textColorSecondary">@color/secundaria</item>
+
+        <!-- Personalizações extras para componentes do Material -->
+        <item name="materialThemeOverlay">@style/ThemeOverlay.SafeTrace</item>
+    </style>
+
+    <!-- Overlay para personalizar campos de texto do Material -->
+    <style name="ThemeOverlay.SafeTrace" parent="ThemeOverlay.MaterialComponents.TextInputEditText.OutlinedBox">
+        <item name="colorControlNormal">@color/primaria</item> <!-- cor da borda inativa -->
+        <item name="colorControlActivated">@color/primaria</item> <!-- cor da borda quando selecionado -->
+        <item name="android:textColor">@color/primaria</item> <!-- cor do texto digitado -->
+        <item name="android:textColorHint">@color/primaria</item> <!-- cor do hint -->
+    </style>
+
+</resources>

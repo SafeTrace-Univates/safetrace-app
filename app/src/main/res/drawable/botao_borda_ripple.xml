@@ -1,0 +1,24 @@
+<ripple xmlns:android="http://schemas.android.com/apk/res/android"
+    android:color="@color/verde"> <!-- cor do efeito ao clicar -->
+
+    <!-- Forma normal do botão -->
+    <item android:id="@android:id/background">
+        <shape android:shape="rectangle">
+            <solid android:color="@android:color/transparent" />
+
+            <stroke
+                android:width="2dp"
+                android:color="@color/verde" />
+
+            <corners android:radius="6dp" />
+        </shape>
+    </item>
+
+    <!-- Máscara do ripple (usa mesma forma para o efeito seguir os cantos) -->
+    <item android:id="@android:id/mask">
+        <shape android:shape="rectangle">
+            <solid android:color="@android:color/white" />
+            <corners android:radius="6dp" />
+        </shape>
+    </item>
+</ripple>

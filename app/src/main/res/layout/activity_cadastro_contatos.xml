@@ -1,0 +1,222 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/cadastroContatos"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/fundo">
+
+    <!-- Guidelines -->
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/guidelineBordaTopo"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_begin="16dp" />
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/guidelineBordaEsquerda"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintGuide_begin="16dp" />
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/guidelineBordaDireita"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintGuide_end="16dp" />
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/guidelineLogo"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_begin="61dp" />
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/guidelineCodigo"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_begin="272dp" />
+
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/guidelineBordaFim"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_end="16dp" />
+
+    <!-- Logo e Título -->
+    <ImageView
+        android:id="@+id/imageViewLogo"
+        android:layout_width="38dp"
+        android:layout_height="70dp"
+        android:layout_marginTop="16dp"
+        app:layout_constraintBottom_toTopOf="@+id/guidelineLogo"
+        app:layout_constraintStart_toStartOf="@+id/guidelineBordaEsquerda"
+        app:layout_constraintTop_toTopOf="parent"
+        app:srcCompat="@drawable/icone" />
+
+    <TextView
+        android:id="@+id/textTitulo"
+        android:layout_width="173dp"
+        android:layout_height="23dp"
+        android:layout_marginStart="4dp"
+        android:fontFamily="@font/poppins_semibold"
+        android:text="SafeTrace"
+        android:textColor="@color/primaria"
+        android:textSize="20sp"
+        app:layout_constraintBottom_toTopOf="@+id/guidelineLogo"
+        app:layout_constraintStart_toEndOf="@+id/imageViewLogo"
+        app:layout_constraintTop_toTopOf="@+id/guidelineBordaTopo" />
+
+    <ImageView
+        android:id="@+id/imageViewMenu"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintBottom_toTopOf="@+id/guidelineLogo"
+        app:layout_constraintEnd_toStartOf="@+id/guidelineBordaDireita"
+        app:layout_constraintTop_toTopOf="@+id/guidelineBordaTopo"
+        app:srcCompat="@drawable/baseline_dehaze_24" />
+
+    <!-- Código -->
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/buttonBordaCodigo"
+        android:layout_width="340dp"
+        android:layout_height="91dp"
+        android:backgroundTint="@android:color/transparent"
+        android:fontFamily="@font/poppins"
+        android:stateListAnimator="@null"
+        android:text="                        "
+        android:textColor="@color/primaria"
+        app:cornerRadius="6dp"
+        app:layout_constraintBottom_toTopOf="@+id/guidelineCodigo"
+        app:layout_constraintEnd_toStartOf="@+id/guidelineBordaDireita"
+        app:layout_constraintStart_toStartOf="@+id/guidelineBordaEsquerda"
+        app:layout_constraintTop_toTopOf="@+id/guidelineLogo"
+        app:rippleColor="@color/primaria"
+        app:strokeColor="@color/primaria"
+        app:strokeWidth="3dp" />
+
+    <EditText
+        android:id="@+id/editTextCodigo"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:ems="10"
+        android:fontFamily="@font/poppins"
+        android:inputType="text"
+        android:text="Código"
+        android:textAlignment="center"
+        android:textColor="@color/primaria"
+        android:background="@android:color/transparent"
+        android:textSize="20sp"
+        app:layout_constraintBottom_toBottomOf="@+id/buttonBordaCodigo"
+        app:layout_constraintEnd_toStartOf="@+id/guidelineBordaDireita"
+        app:layout_constraintStart_toStartOf="@+id/guidelineBordaEsquerda"
+        app:layout_constraintTop_toTopOf="@+id/buttonBordaCodigo" />
+
+    <!-- Botão Salvar -->
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/buttonSalvar"
+        android:layout_width="wrap_content"
+        android:layout_height="42dp"
+        android:backgroundTint="@android:color/transparent"
+        android:fontFamily="@font/poppins"
+        android:stateListAnimator="@null"
+        android:text="Salvar"
+        android:textColor="@color/verde"
+        android:textSize="14sp"
+        app:cornerRadius="6dp"
+        app:layout_constraintBottom_toTopOf="@+id/guidelineCodigo"
+        app:layout_constraintEnd_toStartOf="@+id/guidelineBordaDireita"
+        app:layout_constraintHorizontal_bias="0.937"
+        app:layout_constraintStart_toStartOf="@+id/guidelineBordaEsquerda"
+        app:layout_constraintTop_toBottomOf="@+id/buttonBordaCodigo"
+        app:rippleColor="@color/verde"
+        app:strokeColor="@color/verde"
+        app:strokeWidth="2dp" />
+
+    <!-- ScrollView Contatos -->
+    <ScrollView
+        android:id="@+id/scrollViewContatos"
+        android:layout_width="340dp"
+        android:layout_height="340dp"
+        app:layout_constraintBottom_toTopOf="@+id/guidelineBordaFim"
+        app:layout_constraintEnd_toStartOf="@+id/guidelineBordaDireita"
+        app:layout_constraintStart_toStartOf="@+id/guidelineBordaEsquerda"
+        app:layout_constraintTop_toTopOf="@+id/guidelineCodigo"
+        app:layout_constraintVertical_bias="0.479">
+
+        <LinearLayout
+            android:id="@+id/layoutContatos"
+            android:layout_width="340dp"
+            android:layout_height="wrap_content"
+            android:gravity="center_horizontal"
+            android:orientation="vertical"
+            android:paddingTop="4dp"
+            android:paddingBottom="4dp">
+
+            <!-- botões de contato -->
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/buttonContato1"
+                android:layout_width="300dp"
+                android:layout_height="61dp"
+                android:layout_marginTop="8dp"
+                android:layout_marginBottom="8dp"
+                android:backgroundTint="@android:color/transparent"
+                android:fontFamily="@font/poppins"
+                android:stateListAnimator="@null"
+                android:text="Contato 1"
+                android:textAllCaps="false"
+                android:textColor="@color/primaria"
+                android:textSize="18sp"
+                app:cornerRadius="6dp"
+                app:rippleColor="@color/primaria"
+                app:strokeColor="@color/primaria"
+                app:strokeWidth="2dp" />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/buttonContato2"
+                android:layout_width="300dp"
+                android:layout_height="61dp"
+                android:layout_marginTop="8dp"
+                android:layout_marginBottom="8dp"
+                android:backgroundTint="@android:color/transparent"
+                android:fontFamily="@font/poppins"
+                android:stateListAnimator="@null"
+                android:text="Contato 2"
+                android:textAllCaps="false"
+                android:textColor="@color/primaria"
+                android:textSize="18sp"
+                app:cornerRadius="6dp"
+                app:rippleColor="@color/primaria"
+                app:strokeColor="@color/primaria"
+                app:strokeWidth="2dp" />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/buttonContato3"
+                android:layout_width="300dp"
+                android:layout_height="61dp"
+                android:layout_marginTop="8dp"
+                android:layout_marginBottom="8dp"
+                android:backgroundTint="@android:color/transparent"
+                android:fontFamily="@font/poppins"
+                android:stateListAnimator="@null"
+                android:text="Contato 3"
+                android:textAllCaps="false"
+                android:textColor="@color/primaria"
+                android:textSize="18sp"
+                app:cornerRadius="6dp"
+                app:rippleColor="@color/primaria"
+                app:strokeColor="@color/primaria"
+                app:strokeWidth="2dp" />
+
+        </LinearLayout>
+    </ScrollView>
+
+</androidx.constraintlayout.widget.ConstraintLayout>
