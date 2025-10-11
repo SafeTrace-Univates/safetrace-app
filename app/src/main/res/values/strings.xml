@@ -1,3 +1,48 @@
 <resources>
     <string name="app_name">SafeTrace</string>
+    
+    <!-- Login Activity Strings -->
+    <string name="login_placeholder">Login</string>
+    <string name="enter_login">Digite seu login</string>
+    <string name="enter_password">Digite sua senha</string>
+    <string name="login_success">Login realizado com sucesso!</string>
+    <string name="invalid_login">Login ou senha inválidos</string>
+    
+    <!-- Cadastro Activity Strings -->
+    <string name="name_placeholder">Nome Completo</string>
+    <string name="email_placeholder">Email</string>
+    <string name="cpf_placeholder">CPF</string>
+    <string name="phone_placeholder">Telefone</string>
+    <string name="password_placeholder">Senha</string>
+    <string name="registration_success">Cadastro realizado com sucesso!</string>
+    <string name="enter_full_name">Digite seu nome completo</string>
+    <string name="name_min_length">Nome deve ter pelo menos 3 caracteres</string>
+    <string name="enter_email">Digite seu email</string>
+    <string name="invalid_email">Email inválido</string>
+    <string name="enter_cpf">Digite seu CPF</string>
+    <string name="cpf_length">CPF deve ter 11 dígitos</string>
+    <string name="enter_phone">Digite seu telefone</string>
+    <string name="phone_min_length">Telefone deve ter pelo menos 10 dígitos</string>
+    <string name="password_min_length">Senha deve ter pelo menos 6 caracteres</string>
+    
+    <!-- Cadastro Contatos Activity Strings -->
+    <string name="code_placeholder">Código</string>
+    <string name="save">Salvar</string>
+    <string name="contact1">Contato 1</string>
+    <string name="contact2">Contato 2</string>
+    <string name="contact3">Contato 3</string>
+    <string name="contact1_not_configured">Contato 1 não configurado</string>
+    <string name="contact2_not_configured">Contato 2 não configurado</string>
+    <string name="contact3_not_configured">Contato 3 não configurado</string>
+    <string name="enter_contact_code">Digite um código de contato</string>
+    <string name="code_min_length">Código deve ter pelo menos 10 dígitos</string>
+    <string name="contact1_saved">Contato 1 salvo: %s</string>
+    <string name="contact2_saved">Contato 2 salvo: %s</string>
+    <string name="contact3_saved">Contato 3 salvo: %s</string>
+    <string name="all_contacts_filled">Todos os contatos já estão preenchidos</string>
+    
+    <!-- Navigation Drawer Strings -->
+    <string name="navigation_drawer_open">Abrir menu de navegação</string>
+    <string name="navigation_drawer_close">Fechar menu de navegação</string>
+    <string name="nav_header_desc">Cabeçalho do menu de navegação</string>
 </resources>
