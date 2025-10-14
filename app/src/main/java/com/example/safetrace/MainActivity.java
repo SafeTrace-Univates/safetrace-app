@@ -109,7 +109,10 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     public boolean onNavigationItemSelected(@NonNull MenuItem item) {
         int id = item.getItemId();
         
-        if (id == R.id.nav_contatos_confianca) {
+        if (id == R.id.nav_home) {
+            // Já estamos na tela principal, apenas fechar o drawer
+            drawerLayout.closeDrawer(navigationView);
+        } else if (id == R.id.nav_contatos_confianca) {
             // Navegar para a tela de contatos de confiança
             Intent intent = new Intent(this, CadastroContatosActivity.class);
             startActivity(intent);

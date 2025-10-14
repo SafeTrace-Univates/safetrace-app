@@ -4,26 +4,40 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.text.TextUtils;
+import android.view.MenuItem;
+import android.view.View;
 import android.widget.EditText;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.ScrollView;
 import android.widget.Toast;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import androidx.activity.OnBackPressedCallback;
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.drawerlayout.widget.DrawerLayout;
 
 import com.google.android.material.button.MaterialButton;
+import com.google.android.material.navigation.NavigationView;
 
-public class CadastroContatosActivity extends AppCompatActivity {
+public class CadastroContatosActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
 
     private EditText editTextCodigo;
     private MaterialButton buttonSalvar;
-    private MaterialButton buttonContato1;
-    private MaterialButton buttonContato2;
-    private MaterialButton buttonContato3;
+    private ImageView imageViewMenu;
+    private ScrollView scrollViewContatos;
+    private LinearLayout layoutContatos;
+    
+    private DrawerLayout drawerLayout;
+    private NavigationView navigationView;
+    private ActionBarDrawerToggle toggle;
 
-    // Simulação de contatos salvos (pode ser expandido com banco de dados)
-    private String contato1 = "";
-    private String contato2 = "";
-    private String contato3 = "";
+    // Lista dinâmica de contatos
+    private List<String> contatos = new ArrayList<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -31,62 +45,44 @@ public class CadastroContatosActivity extends AppCompatActivity {
         setContentView(R.layout.activity_cadastro_contatos);
 
         initializeViews();
+        setupDrawer();
         setupClickListeners();
-        setupFocusListener();
-        setupBackPressedCallback();
-        updateContactButtons();
+        updateContactList();
     }
 
     private void initializeViews() {
         editTextCodigo = findViewById(R.id.editTextCodigo);
         buttonSalvar = findViewById(R.id.buttonSalvar);
-        buttonContato1 = findViewById(R.id.buttonContato1);
-        buttonContato2 = findViewById(R.id.buttonContato2);
-        buttonContato3 = findViewById(R.id.buttonContato3);
+        imageViewMenu = findViewById(R.id.imageViewMenu);
+        scrollViewContatos = findViewById(R.id.scrollViewContatos);
+        layoutContatos = findViewById(R.id.layoutContatos);
+        
+        drawerLayout = findViewById(R.id.drawer_layout);
+        navigationView = findViewById(R.id.nav_view);
+    }
+    
+    private void setupDrawer() {
+        toggle = new ActionBarDrawerToggle(this, drawerLayout, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
+        drawerLayout.addDrawerListener(toggle);
+        toggle.syncState();
+        
+        navigationView.setNavigationItemSelectedListener(this);
     }
 
     private void setupClickListeners() {
         buttonSalvar.setOnClickListener(v -> saveContact());
-
-        buttonContato1.setOnClickListener(v -> {
-            if (!TextUtils.isEmpty(contato1)) {
-                makeCall(contato1);
-            } else {
-                Toast.makeText(CadastroContatosActivity.this, getString(R.string.contact1_not_configured), Toast.LENGTH_SHORT).show();
-            }
-        });
-
-        buttonContato2.setOnClickListener(v -> {
-            if (!TextUtils.isEmpty(contato2)) {
-                makeCall(contato2);
-            } else {
-                Toast.makeText(CadastroContatosActivity.this, getString(R.string.contact2_not_configured), Toast.LENGTH_SHORT).show();
-            }
-        });
-
-        buttonContato3.setOnClickListener(v -> {
-            if (!TextUtils.isEmpty(contato3)) {
-                makeCall(contato3);
-            } else {
-                Toast.makeText(CadastroContatosActivity.this, getString(R.string.contact3_not_configured), Toast.LENGTH_SHORT).show();
-            }
+        
+        // Menu - abre o drawer lateral
+        imageViewMenu.setOnClickListener(v -> {
+            drawerLayout.openDrawer(navigationView);
         });
     }
 
-    private void setupFocusListener() {
-        editTextCodigo.setOnFocusChangeListener((v, hasFocus) -> {
-            if (hasFocus && editTextCodigo.getText().toString().equals(getString(R.string.code_placeholder))) {
-                editTextCodigo.setText("");
-            } else if (!hasFocus && TextUtils.isEmpty(editTextCodigo.getText().toString())) {
-                editTextCodigo.setText(getString(R.string.code_placeholder));
-            }
-        });
-    }
 
     private void saveContact() {
         String codigo = editTextCodigo.getText().toString().trim();
         
-        if (TextUtils.isEmpty(codigo) || codigo.equals(getString(R.string.code_placeholder))) {
+        if (TextUtils.isEmpty(codigo)) {
             Toast.makeText(this, getString(R.string.enter_contact_code), Toast.LENGTH_SHORT).show();
             editTextCodigo.requestFocus();
             return;
@@ -101,47 +97,126 @@ public class CadastroContatosActivity extends AppCompatActivity {
             return;
         }
 
-        // Salvar no primeiro slot vazio
-        if (TextUtils.isEmpty(contato1)) {
-            contato1 = codigo;
-            Toast.makeText(this, getString(R.string.contact1_saved, codigo), Toast.LENGTH_SHORT).show();
-        } else if (TextUtils.isEmpty(contato2)) {
-            contato2 = codigo;
-            Toast.makeText(this, getString(R.string.contact2_saved, codigo), Toast.LENGTH_SHORT).show();
-        } else if (TextUtils.isEmpty(contato3)) {
-            contato3 = codigo;
-            Toast.makeText(this, getString(R.string.contact3_saved, codigo), Toast.LENGTH_SHORT).show();
-        } else {
-            Toast.makeText(this, getString(R.string.all_contacts_filled), Toast.LENGTH_SHORT).show();
+        // Verificar se o contato já existe
+        if (contatos.contains(codigo)) {
+            Toast.makeText(this, "Este contato já foi cadastrado", Toast.LENGTH_SHORT).show();
+            editTextCodigo.requestFocus();
             return;
         }
 
-        editTextCodigo.setText(getString(R.string.code_placeholder));
-        updateContactButtons();
+        // Adicionar contato à lista
+        contatos.add(codigo);
+        Toast.makeText(this, "Contato salvo: " + codigo, Toast.LENGTH_SHORT).show();
+
+        editTextCodigo.setText("");
+        updateContactList();
+        
+        // Manter o foco no campo de código para facilitar cadastro de mais contatos
+        editTextCodigo.requestFocus();
     }
 
-    private void updateContactButtons() {
-        buttonContato1.setText(TextUtils.isEmpty(contato1) ? getString(R.string.contact1) : getString(R.string.contact1) + "\n" + contato1);
-        buttonContato2.setText(TextUtils.isEmpty(contato2) ? getString(R.string.contact2) : getString(R.string.contact2) + "\n" + contato2);
-        buttonContato3.setText(TextUtils.isEmpty(contato3) ? getString(R.string.contact3) : getString(R.string.contact3) + "\n" + contato3);
+    private void updateContactList() {
+        // Verificar se os componentes estão inicializados
+        if (layoutContatos == null || scrollViewContatos == null) {
+            return;
+        }
+        
+        // Limpar a lista atual
+        layoutContatos.removeAllViews();
+        
+        // Mostrar lista apenas se houver contatos cadastrados
+        if (contatos.isEmpty()) {
+            scrollViewContatos.setVisibility(View.GONE);
+            return;
+        }
+        
+        scrollViewContatos.setVisibility(View.VISIBLE);
+        
+        // Criar botões dinamicamente para cada contato
+        for (int i = 0; i < contatos.size(); i++) {
+            String contato = contatos.get(i);
+            if (contato != null && !contato.isEmpty()) {
+                MaterialButton button = createContactButton(contato, i);
+                layoutContatos.addView(button);
+            }
+        }
+    }
+    
+    private MaterialButton createContactButton(String phoneNumber, int index) {
+        MaterialButton button = new MaterialButton(this);
+        
+        // Verificar se o número de telefone é válido
+        if (phoneNumber == null || phoneNumber.isEmpty()) {
+            return button;
+        }
+        
+        // Configurar layout
+        LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(
+            (int) (250 * getResources().getDisplayMetrics().density), // 250dp
+            (int) (61 * getResources().getDisplayMetrics().density)   // 61dp
+        );
+        params.setMargins(0, (int) (8 * getResources().getDisplayMetrics().density), 0, (int) (8 * getResources().getDisplayMetrics().density));
+        button.setLayoutParams(params);
+        
+        // Configurar aparência
+        button.setText(phoneNumber);
+        button.setTextSize(18);
+        button.setTextColor(getResources().getColor(R.color.primaria));
+        button.setBackgroundTintList(getResources().getColorStateList(android.R.color.transparent));
+        button.setStrokeColor(getResources().getColorStateList(R.color.primaria));
+        button.setStrokeWidth((int) (2 * getResources().getDisplayMetrics().density));
+        button.setCornerRadius((int) (6 * getResources().getDisplayMetrics().density));
+        button.setRippleColor(getResources().getColorStateList(R.color.primaria));
+        button.setAllCaps(false);
+        
+        // Remover efeitos de sombra
+        button.setElevation(0);
+        button.setStateListAnimator(null);
+        
+        // Configurar click listener
+        button.setOnClickListener(v -> makeCall(phoneNumber));
+        
+        return button;
     }
 
     private void makeCall(String phoneNumber) {
-        Intent callIntent = new Intent(Intent.ACTION_CALL);
-        callIntent.setData(Uri.parse("tel:" + phoneNumber));
-        startActivity(callIntent);
+        Intent dialIntent = new Intent(Intent.ACTION_DIAL);
+        dialIntent.setData(Uri.parse("tel:" + phoneNumber));
+        startActivity(dialIntent);
     }
 
-    private void setupBackPressedCallback() {
-        OnBackPressedCallback callback = new OnBackPressedCallback(true) {
-            @Override
-            public void handleOnBackPressed() {
-                // Voltar para MainActivity
-                Intent intent = new Intent(CadastroContatosActivity.this, MainActivity.class);
-                startActivity(intent);
-                finish();
-            }
-        };
-        getOnBackPressedDispatcher().addCallback(this, callback);
+    
+    @Override
+    public void onBackPressed() {
+        if (drawerLayout.isDrawerOpen(navigationView)) {
+            drawerLayout.closeDrawer(navigationView);
+        } else {
+            // Usar comportamento padrão do Android
+            super.onBackPressed();
+        }
+    }
+    
+    @Override
+    public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+        int id = item.getItemId();
+        
+        if (id == R.id.nav_home) {
+            // Navegar para a tela principal
+            Intent intent = new Intent(this, MainActivity.class);
+            startActivity(intent);
+            finish();
+        } else if (id == R.id.nav_contatos_confianca) {
+            // Já estamos na tela de contatos de confiança, apenas fechar o drawer
+            drawerLayout.closeDrawer(navigationView);
+        } else if (id == R.id.nav_logout) {
+            // Fazer logout - voltar para tela de login
+            Intent intent = new Intent(this, LoginActivity.class);
+            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+            startActivity(intent);
+            finish();
+        }
+        
+        drawerLayout.closeDrawer(navigationView);
+        return true;
     }
 }
