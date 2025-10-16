@@ -81,6 +81,7 @@
         app:layout_constraintStart_toEndOf="@+id/imageViewLogo"
         app:layout_constraintTop_toTopOf="@+id/guidelineBordaTopo" />
 
+    <!-- Código -->
     <ImageView
         android:id="@+id/imageViewMenu"
         android:layout_width="wrap_content"
@@ -88,9 +89,9 @@
         app:layout_constraintBottom_toTopOf="@+id/guidelineLogo"
         app:layout_constraintEnd_toStartOf="@+id/guidelineBordaDireita"
         app:layout_constraintTop_toTopOf="@+id/guidelineBordaTopo"
+        app:layout_constraintVertical_bias="0.857"
         app:srcCompat="@drawable/baseline_dehaze_24" />
 
-    <!-- Código -->
     <com.google.android.material.button.MaterialButton
         android:id="@+id/buttonBordaCodigo"
         android:layout_width="340dp"

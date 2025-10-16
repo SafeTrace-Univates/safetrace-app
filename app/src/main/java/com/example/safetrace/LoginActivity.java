@@ -12,6 +12,8 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.google.android.material.button.MaterialButton;
 
+import org.json.JSONObject;
+
 public class LoginActivity extends AppCompatActivity {
 
     private EditText editTextLogin;
@@ -77,15 +79,21 @@ public class LoginActivity extends AppCompatActivity {
             return;
         }
 
-        // Validação simples (pode ser expandida com banco de dados)
-        if (login.length() >= 3 && senha.length() >= 4) {
-            Toast.makeText(this, getString(R.string.login_success), Toast.LENGTH_SHORT).show();
-            Intent intent = new Intent(LoginActivity.this, MainActivity.class);
-            startActivity(intent);
-            finish();
-        } else {
-            Toast.makeText(this, getString(R.string.invalid_login), Toast.LENGTH_SHORT).show();
-        }
+        APIService.getInstance(this).login(this, login, senha, new APIService.APIServiceCallback() {
+            @Override
+            public void onSuccess(JSONObject response) {
+                String token = response.optString("token");
+                Intent intent = new Intent(LoginActivity.this, MainActivity.class);
+                startActivity(intent);
+                finish();
+            }
+
+            @Override
+            public void onError(String error) {
+                System.out.println(error);
+                Toast.makeText(LoginActivity.this, error, Toast.LENGTH_SHORT).show();
+            }
+        });
     }
 
     private void setupBackPressedCallback() {

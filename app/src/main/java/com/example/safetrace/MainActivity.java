@@ -1,6 +1,7 @@
 package com.example.safetrace;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Bundle;
 import android.view.MenuItem;
@@ -18,6 +19,8 @@ import androidx.drawerlayout.widget.DrawerLayout;
 
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.navigation.NavigationView;
+
+import org.json.JSONObject;
 
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
     
@@ -117,11 +120,31 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             Intent intent = new Intent(this, CadastroContatosActivity.class);
             startActivity(intent);
         } else if (id == R.id.nav_logout) {
-            // Fazer logout - voltar para tela de login
-            Intent intent = new Intent(this, LoginActivity.class);
-            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-            startActivity(intent);
-            finish();
+            APIService.getInstance(this).logout(this, new APIService.APIServiceCallback() {
+                @Override
+                public void onSuccess(JSONObject response) {
+                    // Optionally clear token on success
+                    SharedPreferences prefs = getSharedPreferences("safetrace_prefs", MODE_PRIVATE);
+                    prefs.edit().remove("api_token").apply();
+                    Toast.makeText(MainActivity.this,
+                            response.optString("message", "Desconectado com sucesso"),
+                            Toast.LENGTH_SHORT).show();
+
+                    // Navigate to LoginActivity, clear task/history
+                    Intent intent = new Intent(MainActivity.this, LoginActivity.class);
+                    intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                    startActivity(intent);
+                    finish();
+                }
+
+                @Override
+                public void onError(String error) {
+                    Toast.makeText(MainActivity.this,
+                            "Erro ao desconectar: " + error,
+                            Toast.LENGTH_SHORT).show();
+                }
+            });
+            drawerLayout.closeDrawer(navigationView);
         }
         
         drawerLayout.closeDrawer(navigationView);

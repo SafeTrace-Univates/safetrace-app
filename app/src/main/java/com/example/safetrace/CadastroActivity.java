@@ -13,6 +13,8 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.google.android.material.button.MaterialButton;
 
+import org.json.JSONObject;
+
 public class CadastroActivity extends AppCompatActivity {
 
     private EditText editTextNome;
@@ -169,20 +171,38 @@ public class CadastroActivity extends AppCompatActivity {
         String telefone = editTextTelefone.getText().toString().trim();
         String senha = editTextSenha.getText().toString().trim();
 
+        APIService.getInstance(this).register(this, nome, email, telefone, cpf, senha, new APIService.APIServiceCallback() {
+            @Override
+            public void onSuccess(JSONObject response) {
+                String token = response.optString("token");
+                Intent intent = new Intent(CadastroActivity.this, MainActivity.class);
+                startActivity(intent);
+                finish();
+            }
+
+            @Override
+            public void onError(String error) {
+                Toast.makeText(CadastroActivity.this, error, Toast.LENGTH_SHORT).show();
+            }
+        });
+
         // Validações
-        if (!validateNome(nome)) return;
-        if (!validateEmail(email)) return;
-        if (!validateCPF(cpf)) return;
-        if (!validateTelefone(telefone)) return;
-        if (!validateSenha(senha)) return;
+//        if (!validateNome(nome)) return;
+//        if (!validateEmail(email)) return;
+//        if (!validateCPF(cpf)) return;
+//        if (!validateTelefone(telefone)) return;
+//        if (!validateSenha(senha)) return;
+
+
+
 
         // Se todas as validações passaram, cadastrar usuário
-        Toast.makeText(this, getString(R.string.registration_success), Toast.LENGTH_SHORT).show();
-        
-        // Redirecionar para tela de login
-        Intent intent = new Intent(CadastroActivity.this, LoginActivity.class);
-        startActivity(intent);
-        finish();
+//        Toast.makeText(this, getString(R.string.registration_success), Toast.LENGTH_SHORT).show();
+//
+//        // Redirecionar para tela de login
+//        Intent intent = new Intent(CadastroActivity.this, LoginActivity.class);
+//        startActivity(intent);
+//        finish();
     }
 
     private boolean validateNome(String nome) {
