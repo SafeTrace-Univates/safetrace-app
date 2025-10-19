@@ -4,6 +4,15 @@
 
     <!-- Permissões necessárias para o app -->
     <uses-permission android:name="android.permission.INTERNET" />
+    
+    <!-- Permissões para gravação de áudio -->
+    <uses-permission android:name="android.permission.RECORD_AUDIO" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.WAKE_LOCK" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_MICROPHONE" />
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
     <application
         android:allowBackup="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
@@ -16,7 +25,8 @@
         android:networkSecurityConfig="@xml/network_security_config"
         tools:targetApi="31">
         
-        <!-- LoginActivity - Tela de login (tela inicial) -->
+        <!-- LoginActivity - Tela de login (comentado para testes) -->
+        <!--
         <activity
             android:name=".LoginActivity"
             android:exported="true">
@@ -25,11 +35,17 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        -->
         
-        <!-- MainActivity - Tela principal com botões de emergência -->
+        <!-- MainActivity - Tela principal com botões de emergência (tela inicial para testes) -->
         <activity
             android:name=".MainActivity"
-            android:exported="false" />
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
         
         <!-- CadastroActivity - Tela de cadastro de usuário -->
         <activity
@@ -40,6 +56,29 @@
         <activity
             android:name=".CadastroContatosActivity"
             android:exported="false" />
+        
+        <!-- AudioListActivity - Lista de gravações -->
+        <activity
+            android:name=".AudioListActivity"
+            android:exported="false" />
+        
+        <!-- RecordingService - Serviço de gravação de áudio -->
+        <service
+            android:name=".RecordingService"
+            android:enabled="true"
+            android:exported="false"
+            android:foregroundServiceType="microphone" />
+        
+        <!-- FileProvider para compartilhar arquivos de áudio -->
+        <provider
+            android:name="androidx.core.content.FileProvider"
+            android:authorities="com.example.safetrace.fileprovider"
+            android:exported="false"
+            android:grantUriPermissions="true">
+            <meta-data
+                android:name="android.support.FILE_PROVIDER_PATHS"
+                android:resource="@xml/file_paths" />
+        </provider>
         
         <meta-data
             android:name="preloaded_fonts"

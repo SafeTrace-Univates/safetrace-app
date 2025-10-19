@@ -20,6 +20,9 @@ import androidx.activity.OnBackPressedCallback;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.graphics.Insets;
+import androidx.core.view.ViewCompat;
+import androidx.core.view.WindowInsetsCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 
 import com.google.android.material.button.MaterialButton;
@@ -47,18 +50,23 @@ public class CadastroContatosActivity extends AppCompatActivity implements Navig
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        androidx.activity.EdgeToEdge.enable(this);
         setContentView(R.layout.activity_cadastro_contatos);
+
+        // Corrige o padding para não ficar atrás da status bar
+        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.cadastroContatos), (v, insets) -> {
+            Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
+            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
+            return insets;
+        });
 
         initializeViews();
         setupDrawer();
         setupClickListeners();
-
-        // Load contacts from API and then update full contact list UI
         loadContactsFromApi();
-
-        // Also update UI for manually added contacts
         updateContactList();
     }
+
 
     private void initializeViews() {
         editTextCodigo = findViewById(R.id.editTextCodigo);

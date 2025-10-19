@@ -12,6 +12,10 @@
             android:id="@+id/nav_contatos_confianca"
             android:icon="@drawable/baseline_contacts_24"
             android:title="Contatos de Confiança" />
+        <item
+            android:id="@+id/nav_audios"
+            android:icon="@drawable/baseline_dehaze_24"
+            android:title="Gravações" />
     </group>
 
     <item android:title="Ações">

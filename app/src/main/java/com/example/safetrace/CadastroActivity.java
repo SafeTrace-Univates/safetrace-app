@@ -4,7 +4,6 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.text.TextWatcher;
-import android.util.Patterns;
 import android.widget.EditText;
 import android.widget.Toast;
 
@@ -185,99 +184,8 @@ public class CadastroActivity extends AppCompatActivity {
                 Toast.makeText(CadastroActivity.this, error, Toast.LENGTH_SHORT).show();
             }
         });
-
-        // Validações
-//        if (!validateNome(nome)) return;
-//        if (!validateEmail(email)) return;
-//        if (!validateCPF(cpf)) return;
-//        if (!validateTelefone(telefone)) return;
-//        if (!validateSenha(senha)) return;
-
-
-
-
-        // Se todas as validações passaram, cadastrar usuário
-//        Toast.makeText(this, getString(R.string.registration_success), Toast.LENGTH_SHORT).show();
-//
-//        // Redirecionar para tela de login
-//        Intent intent = new Intent(CadastroActivity.this, LoginActivity.class);
-//        startActivity(intent);
-//        finish();
     }
 
-    private boolean validateNome(String nome) {
-        if (TextUtils.isEmpty(nome) || nome.equals(getString(R.string.name_placeholder))) {
-            Toast.makeText(this, getString(R.string.enter_full_name), Toast.LENGTH_SHORT).show();
-            editTextNome.requestFocus();
-            return false;
-        }
-        if (nome.length() < 3) {
-            Toast.makeText(this, getString(R.string.name_min_length), Toast.LENGTH_SHORT).show();
-            editTextNome.requestFocus();
-            return false;
-        }
-        return true;
-    }
-
-    private boolean validateEmail(String email) {
-        if (TextUtils.isEmpty(email) || email.equals(getString(R.string.email_placeholder))) {
-            Toast.makeText(this, getString(R.string.enter_email), Toast.LENGTH_SHORT).show();
-            editTextEmail.requestFocus();
-            return false;
-        }
-        if (!Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
-            Toast.makeText(this, getString(R.string.invalid_email), Toast.LENGTH_SHORT).show();
-            editTextEmail.requestFocus();
-            return false;
-        }
-        return true;
-    }
-
-    private boolean validateCPF(String cpf) {
-        if (TextUtils.isEmpty(cpf) || cpf.equals(getString(R.string.cpf_placeholder))) {
-            Toast.makeText(this, getString(R.string.enter_cpf), Toast.LENGTH_SHORT).show();
-            editTextCpf.requestFocus();
-            return false;
-        }
-        // Remove caracteres não numéricos para validação
-        String cpfNumbers = cpf.replaceAll("[^0-9]", "");
-        if (cpfNumbers.length() != 11) {
-            Toast.makeText(this, getString(R.string.cpf_length), Toast.LENGTH_SHORT).show();
-            editTextCpf.requestFocus();
-            return false;
-        }
-        return true;
-    }
-
-    private boolean validateTelefone(String telefone) {
-        if (TextUtils.isEmpty(telefone) || telefone.equals(getString(R.string.phone_placeholder))) {
-            Toast.makeText(this, getString(R.string.enter_phone), Toast.LENGTH_SHORT).show();
-            editTextTelefone.requestFocus();
-            return false;
-        }
-        // Remove caracteres não numéricos para validação
-        String phoneNumbers = telefone.replaceAll("[^0-9]", "");
-        if (phoneNumbers.length() < 10) {
-            Toast.makeText(this, getString(R.string.phone_min_length), Toast.LENGTH_SHORT).show();
-            editTextTelefone.requestFocus();
-            return false;
-        }
-        return true;
-    }
-
-    private boolean validateSenha(String senha) {
-        if (TextUtils.isEmpty(senha) || senha.equals(getString(R.string.password_placeholder))) {
-            Toast.makeText(this, getString(R.string.enter_password), Toast.LENGTH_SHORT).show();
-            editTextSenha.requestFocus();
-            return false;
-        }
-        if (senha.length() < 6) {
-            Toast.makeText(this, getString(R.string.password_min_length), Toast.LENGTH_SHORT).show();
-            editTextSenha.requestFocus();
-            return false;
-        }
-        return true;
-    }
 
     private void setupBackPressedCallback() {
         OnBackPressedCallback callback = new OnBackPressedCallback(true) {
