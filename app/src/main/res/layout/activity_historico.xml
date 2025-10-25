@@ -1,0 +1,316 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/layoutHistorico"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/fundo">
+
+    <!-- Guidelines -->
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/guidelineBordaTopo"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_begin="16dp" />
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/guidelineBordaEsquerda"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintGuide_begin="16dp" />
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/guidelineBordaDireita"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintGuide_end="16dp" />
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/guidelineLogo"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_begin="61dp" />
+
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/guidelineBordaFim"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_end="16dp" />
+
+    <!-- Logo e Título -->
+    <ImageView
+        android:id="@+id/imageViewLogo"
+        android:layout_width="38dp"
+        android:layout_height="70dp"
+        android:layout_marginTop="16dp"
+        app:layout_constraintBottom_toTopOf="@+id/guidelineLogo"
+        app:layout_constraintStart_toStartOf="@+id/guidelineBordaEsquerda"
+        app:layout_constraintTop_toTopOf="parent"
+        app:srcCompat="@drawable/icone" />
+
+    <TextView
+        android:id="@+id/textTitulo"
+        android:layout_width="173dp"
+        android:layout_height="23dp"
+        android:layout_marginStart="4dp"
+        android:fontFamily="@font/poppins_semibold"
+        android:text="SafeTrace"
+        android:textColor="@color/primaria"
+        android:textSize="20sp"
+        app:layout_constraintBottom_toTopOf="@+id/guidelineLogo"
+        app:layout_constraintStart_toEndOf="@+id/imageViewLogo"
+        app:layout_constraintTop_toTopOf="@+id/guidelineBordaTopo" />
+
+    <!-- icone menu -->
+    <ImageView
+        android:id="@+id/imageViewMenu"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintBottom_toTopOf="@+id/guidelineLogo"
+        app:layout_constraintEnd_toStartOf="@+id/guidelineBordaDireita"
+        app:layout_constraintTop_toTopOf="@+id/guidelineBordaTopo"
+        app:layout_constraintVertical_bias="0.523"
+        app:srcCompat="@drawable/baseline_dehaze_24" />
+
+    <!-- Título página -->
+    <TextView
+        android:id="@+id/txtTitulo"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
+        android:fontFamily="@font/poppins_semibold"
+        android:text="Histórico de Chamadas"
+        android:textColor="#D08B8B"
+        android:textSize="22sp"
+        android:textStyle="bold"
+        app:layout_constraintEnd_toStartOf="@+id/guidelineBordaDireita"
+        app:layout_constraintStart_toStartOf="@+id/guidelineBordaEsquerda"
+        app:layout_constraintTop_toTopOf="@+id/guidelineLogo" />
+
+
+    <!-- ScrollView histórico de emergências -->
+    <ScrollView
+        android:id="@+id/scrollHistorico"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_marginTop="20dp"
+        android:fillViewport="true"
+        app:layout_constraintBottom_toTopOf="@+id/guidelineBordaFim"
+        app:layout_constraintEnd_toStartOf="@+id/guidelineBordaDireita"
+        app:layout_constraintStart_toStartOf="@+id/guidelineBordaEsquerda"
+        app:layout_constraintTop_toTopOf="@+id/txtTitulo">
+
+        <LinearLayout
+            android:id="@+id/containerChamadas"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:dividerPadding="8dp"
+            android:orientation="vertical"
+            android:padding="16dp">
+
+            <!-- Card de chamada -->
+            <LinearLayout
+                android:id="@+id/cardChamada1"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:layout_marginBottom="12dp"
+                android:background="@drawable/bg_card_borda_rosa"
+                android:backgroundTintMode="src_in"
+                android:clipToOutline="true"
+                android:elevation="2dp"
+                android:foreground="?android:attr/selectableItemBackground"
+                android:orientation="vertical"
+                android:padding="16dp">
+
+                <!-- Data -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="0dp"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal"
+                    android:paddingBottom="8dp">
+                    <ImageView
+                        android:id="@+id/imageView16"
+                        android:layout_width="25dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="0"
+                        app:srcCompat="@drawable/baseline_calendar_month_24" />
+                    <TextView
+                        android:id="@+id/txtData"
+                        android:layout_width="wrap_content"
+                        android:layout_height="24dp"
+                        android:layout_marginStart="10dp"
+                        android:fontFamily="@font/poppins"
+                        android:text="21/10/2025"
+                        android:textColor="#D08B8B"
+                        android:textSize="20sp" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="8dp"
+                    android:background="@drawable/bg_divisoria_rosa_clara"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal"
+                    android:paddingBottom="3dp">
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="0dp"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal"
+                    android:paddingBottom="0dp">
+                    <ImageView
+                        android:id="@+id/imageView17"
+                        android:layout_width="25dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="0"
+                        app:srcCompat="@drawable/baseline_watch_later_24" />
+                    <TextView
+                        android:id="@+id/txtHoraInicio"
+                        android:layout_width="wrap_content"
+                        android:layout_height="24dp"
+                        android:layout_marginStart="10dp"
+                        android:fontFamily="@font/poppins"
+                        android:text="Início: 14:35"
+                        android:textColor="@color/cinza"
+                        android:textSize="16sp" />
+                </LinearLayout>
+
+
+                <!-- Horário -->
+                <LinearLayout
+                    android:layout_width="359dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="0dp"
+                    android:orientation="vertical"
+                    android:paddingBottom="8dp">
+                    <TextView
+                        android:id="@+id/txtHoraFim"
+                        android:layout_width="wrap_content"
+                        android:layout_height="24dp"
+                        android:layout_marginStart="34dp"
+                        android:fontFamily="@font/poppins"
+                        android:text="Fim: 14:47"
+                        android:textColor="@color/cinza"
+                        android:textSize="16sp" />
+                </LinearLayout>
+
+
+                <!-- Acionado por -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="0dp"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal"
+                    android:paddingBottom="0dp">
+                    <ImageView
+                        android:id="@+id/imageView18"
+                        android:layout_width="25dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="0"
+                        app:srcCompat="@drawable/baseline_person_24" />
+                    <TextView
+                        android:id="@+id/txtAcionadoPor"
+                        android:layout_width="wrap_content"
+                        android:layout_height="24dp"
+                        android:layout_marginStart="10dp"
+                        android:layout_marginBottom="0dp"
+                        android:fontFamily="@font/poppins"
+                        android:text="Acionado por:"
+                        android:textColor="@color/black"
+                        android:textSize="16sp" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="359dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="0dp"
+                    android:orientation="vertical"
+                    android:paddingBottom="8dp">
+                    <TextView
+                        android:id="@+id/txtNomeAcionador"
+                        android:layout_width="wrap_content"
+                        android:layout_height="24dp"
+                        android:layout_marginStart="34dp"
+                        android:fontFamily="@font/poppins"
+                        android:text="Ana Oliveira"
+                        android:textColor="@color/cinza"
+                        android:textSize="16sp" />
+                </LinearLayout>
+
+
+                <!-- Contatos acionados -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="0dp"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal"
+                    android:paddingBottom="0dp">
+                    <ImageView
+                        android:id="@+id/imageView19"
+                        android:layout_width="25dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="0"
+                        app:srcCompat="@drawable/baseline_groups_24" />
+                    <TextView
+                        android:id="@+id/txtContatosAcionados"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="10dp"
+                        android:layout_marginBottom="0dp"
+                        android:fontFamily="@font/poppins"
+                        android:text="Contatos acionados:"
+                        android:textColor="#333333"
+                        android:textSize="16sp" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="359dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="0dp"
+                    android:orientation="vertical"
+                    android:paddingBottom="8dp">
+                    <TextView
+                        android:id="@+id/txtNomeAcionados"
+                        android:layout_width="wrap_content"
+                        android:layout_height="24dp"
+                        android:layout_marginStart="34dp"
+                        android:fontFamily="@font/poppins"
+                        android:text="Maria Silva, João Santos"
+                        android:textColor="@color/cinza"
+                        android:textSize="16sp" />
+                </LinearLayout>
+
+                <!-- Botão Vver mais -->
+                <Button
+                    android:id="@+id/btnVerMapa"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:layout_marginTop="12dp"
+                    android:background="@drawable/bg_botao_arredondado"
+                    android:fontFamily="@font/poppins_semibold"
+                    android:padding="10dp"
+                    android:text="Ver mais"
+                    android:textAllCaps="false"
+                    android:textColor="@color/fundo"
+                    android:textSize="16sp" />
+            </LinearLayout>
+        </LinearLayout>
+    </ScrollView>
+</androidx.constraintlayout.widget.ConstraintLayout>

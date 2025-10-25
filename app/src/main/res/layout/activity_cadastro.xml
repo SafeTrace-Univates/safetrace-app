@@ -33,21 +33,21 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        app:layout_constraintGuide_begin="61dp" />
+        app:layout_constraintGuide_begin="115dp" />
 
     <androidx.constraintlayout.widget.Guideline
         android:id="@+id/guidelineCadastro"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        app:layout_constraintGuide_begin="140dp" />
+        app:layout_constraintGuide_begin="230dp" />
 
     <androidx.constraintlayout.widget.Guideline
         android:id="@+id/guidelineSalvar"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        app:layout_constraintGuide_end="61dp" />
+        app:layout_constraintGuide_end="230dp" />
 
     <androidx.constraintlayout.widget.Guideline
         android:id="@+id/guidelineBordaFim"
@@ -63,23 +63,21 @@
         android:id="@+id/textViewCadastrar"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="30dp"
-        android:fontFamily="@font/poppins"
+        android:fontFamily="@font/poppins_semibold"
         android:text="Cadastro de Usúario"
         android:textAlignment="center"
         android:textSize="20sp"
         app:layout_constraintBottom_toTopOf="@+id/guidelineCadastro"
         app:layout_constraintEnd_toStartOf="@+id/guidelineBordaDireita"
-        app:layout_constraintStart_toStartOf="@+id/guidelineBordaEsquerda"
-        app:layout_constraintTop_toTopOf="@+id/guidelineLogo" />
+        app:layout_constraintStart_toStartOf="@+id/guidelineBordaEsquerda" />
 
     <!-- Nome Completo -->
     <com.google.android.material.button.MaterialButton
         android:id="@+id/buttonBordaNome"
         android:layout_width="340dp"
-        android:layout_height="80dp"
-        android:layout_marginTop="8dp"
-        android:backgroundTint="@android:color/transparent"
+        android:layout_height="60dp"
+        android:layout_marginTop="40dp"
+        android:backgroundTint="@color/white"
         android:fontFamily="@font/poppins"
         android:stateListAnimator="@null"
         android:text="                        "
@@ -92,31 +90,32 @@
         app:strokeColor="@color/primaria"
         app:strokeWidth="2dp" />
 
+
+    <!-- Email -->
+
     <EditText
         android:id="@+id/editTextNome"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="292dp"
+        android:layout_height="29dp"
+        android:background="@android:color/transparent"
         android:ems="10"
         android:fontFamily="@font/poppins"
         android:inputType="text"
         android:text="Nome Completo"
-        android:textAlignment="center"
-        android:textColor="@color/primaria"
-        android:background="@android:color/transparent"
+        android:textAlignment="viewStart"
+        android:textColor="@color/cinza"
         android:textSize="18sp"
         app:layout_constraintBottom_toBottomOf="@+id/buttonBordaNome"
-        app:layout_constraintEnd_toEndOf="@+id/buttonBordaNome"
-        app:layout_constraintStart_toStartOf="@+id/buttonBordaNome"
-        app:layout_constraintTop_toTopOf="@+id/buttonBordaNome" />
+        app:layout_constraintStart_toStartOf="@+id/guideline"
+        app:layout_constraintTop_toTopOf="@+id/buttonBordaNome"
+        app:layout_constraintVertical_bias="0.58" />
 
-
-    <!-- Email -->
     <com.google.android.material.button.MaterialButton
         android:id="@+id/buttonBordaEmail"
         android:layout_width="340dp"
-        android:layout_height="80dp"
-        android:layout_marginTop="8dp"
-        android:backgroundTint="@android:color/transparent"
+        android:layout_height="60dp"
+        android:layout_marginTop="20dp"
+        android:backgroundTint="@color/white"
         android:fontFamily="@font/poppins"
         android:stateListAnimator="@null"
         android:text="                        "
@@ -129,31 +128,32 @@
         app:strokeColor="@color/primaria"
         app:strokeWidth="2dp" />
 
+
+    <!-- CPF -->
+
     <EditText
         android:id="@+id/editTextEmail"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="290dp"
+        android:layout_height="34dp"
+        android:background="@android:color/transparent"
         android:ems="10"
         android:fontFamily="@font/poppins"
         android:inputType="text"
         android:text="Email"
-        android:textAlignment="center"
-        android:textColor="@color/primaria"
-        android:background="@android:color/transparent"
+        android:textAlignment="viewStart"
+        android:textColor="@color/cinza"
         android:textSize="18sp"
         app:layout_constraintBottom_toBottomOf="@+id/buttonBordaEmail"
-        app:layout_constraintEnd_toEndOf="@+id/buttonBordaEmail"
-        app:layout_constraintStart_toStartOf="@+id/buttonBordaEmail"
-        app:layout_constraintTop_toTopOf="@+id/buttonBordaEmail" />
+        app:layout_constraintStart_toStartOf="@+id/guideline"
+        app:layout_constraintTop_toTopOf="@+id/buttonBordaEmail"
+        app:layout_constraintVertical_bias="0.692" />
 
-
-    <!-- CPF -->
     <com.google.android.material.button.MaterialButton
         android:id="@+id/buttonBordaCpf"
         android:layout_width="340dp"
-        android:layout_height="80dp"
-        android:layout_marginTop="8dp"
-        android:backgroundTint="@android:color/transparent"
+        android:layout_height="60dp"
+        android:layout_marginTop="20dp"
+        android:backgroundTint="@color/white"
         android:fontFamily="@font/poppins"
         android:stateListAnimator="@null"
         android:text="                        "
@@ -166,31 +166,31 @@
         app:strokeColor="@color/primaria"
         app:strokeWidth="2dp" />
 
+
+    <!-- Telefone -->
     <EditText
         android:id="@+id/editTextCpf"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="292dp"
+        android:layout_height="30dp"
+        android:background="@android:color/transparent"
         android:ems="10"
         android:fontFamily="@font/poppins"
         android:inputType="text"
-        android:text="CPF"
-        android:textAlignment="center"
-        android:textColor="@color/primaria"
-        android:background="@android:color/transparent"
+        android:text="Documento"
+        android:textAlignment="viewStart"
+        android:textColor="@color/cinza"
         android:textSize="18sp"
         app:layout_constraintBottom_toBottomOf="@+id/buttonBordaCpf"
-        app:layout_constraintEnd_toEndOf="@+id/buttonBordaCpf"
-        app:layout_constraintStart_toStartOf="@+id/buttonBordaCpf"
-        app:layout_constraintTop_toTopOf="@+id/buttonBordaCpf" />
+        app:layout_constraintStart_toStartOf="@+id/guideline"
+        app:layout_constraintTop_toTopOf="@+id/buttonBordaCpf"
+        app:layout_constraintVertical_bias="0.6" />
 
-
-    <!-- Telefone -->
     <com.google.android.material.button.MaterialButton
         android:id="@+id/buttonBordaTelefone"
         android:layout_width="340dp"
-        android:layout_height="80dp"
-        android:layout_marginTop="8dp"
-        android:backgroundTint="@android:color/transparent"
+        android:layout_height="60dp"
+        android:layout_marginTop="20dp"
+        android:backgroundTint="@color/white"
         android:fontFamily="@font/poppins"
         android:stateListAnimator="@null"
         android:text="                        "
@@ -203,31 +203,31 @@
         app:strokeColor="@color/primaria"
         app:strokeWidth="2dp" />
 
+
+    <!-- Senha -->
     <EditText
         android:id="@+id/editTextTelefone"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="292dp"
+        android:layout_height="32dp"
+        android:background="@android:color/transparent"
         android:ems="10"
         android:fontFamily="@font/poppins"
         android:inputType="text"
         android:text="Telefone"
-        android:textAlignment="center"
-        android:textColor="@color/primaria"
-        android:background="@android:color/transparent"
+        android:textAlignment="viewStart"
+        android:textColor="@color/cinza"
         android:textSize="18sp"
         app:layout_constraintBottom_toBottomOf="@+id/buttonBordaTelefone"
-        app:layout_constraintEnd_toEndOf="@+id/buttonBordaTelefone"
-        app:layout_constraintStart_toStartOf="@+id/buttonBordaTelefone"
-        app:layout_constraintTop_toTopOf="@+id/buttonBordaTelefone" />
+        app:layout_constraintStart_toStartOf="@+id/guideline"
+        app:layout_constraintTop_toTopOf="@+id/buttonBordaTelefone"
+        app:layout_constraintVertical_bias="0.642" />
 
-
-    <!-- Senha -->
     <com.google.android.material.button.MaterialButton
         android:id="@+id/buttonBordaSenha"
         android:layout_width="340dp"
-        android:layout_height="80dp"
-        android:layout_marginTop="8dp"
-        android:backgroundTint="@android:color/transparent"
+        android:layout_height="60dp"
+        android:layout_marginTop="20dp"
+        android:backgroundTint="@color/white"
         android:fontFamily="@font/poppins"
         android:stateListAnimator="@null"
         android:text="                        "
@@ -240,36 +240,36 @@
         app:strokeColor="@color/primaria"
         app:strokeWidth="2dp" />
 
+
+    <!-- Cadastrar -->
     <EditText
         android:id="@+id/editTextSenha"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="291dp"
+        android:layout_height="33dp"
+        android:background="@android:color/transparent"
         android:ems="10"
         android:fontFamily="@font/poppins"
         android:inputType="text"
         android:text="Senha"
-        android:textAlignment="center"
-        android:textColor="@color/primaria"
-        android:background="@android:color/transparent"
+        android:textAlignment="viewStart"
+        android:textColor="@color/cinza"
         android:textSize="18sp"
         app:layout_constraintBottom_toBottomOf="@+id/buttonBordaSenha"
-        app:layout_constraintEnd_toEndOf="@+id/buttonBordaSenha"
-        app:layout_constraintStart_toStartOf="@+id/buttonBordaSenha"
-        app:layout_constraintTop_toTopOf="@+id/buttonBordaSenha" />
+        app:layout_constraintStart_toStartOf="@+id/guideline"
+        app:layout_constraintTop_toTopOf="@+id/buttonBordaSenha"
+        app:layout_constraintVertical_bias="0.666" />
 
-
-    <!-- Cadastrar -->
     <com.google.android.material.button.MaterialButton
         android:id="@+id/buttonCadastrar"
         android:layout_width="200dp"
         android:layout_height="50dp"
-        android:backgroundTint="@android:color/transparent"
-        android:fontFamily="@font/poppins"
+        android:backgroundTint="@color/verde"
+        android:fontFamily="@font/poppins_semibold"
         android:stateListAnimator="@null"
         android:text="Cadastrar"
         android:textAlignment="center"
-        android:textColor="@color/verde"
-        android:textSize="14sp"
+        android:textColor="@color/fundo"
+        android:textSize="16sp"
         app:cornerRadius="4dp"
         app:layout_constraintBottom_toTopOf="@+id/guidelineSalvar"
         app:layout_constraintEnd_toStartOf="@+id/guidelineBordaDireita"
@@ -279,4 +279,93 @@
         app:rippleColor="@color/verde"
         app:strokeColor="@color/verde"
         app:strokeWidth="2dp" />
+
+    <ImageView
+        android:id="@+id/imageView2"
+        android:layout_width="54dp"
+        android:layout_height="29dp"
+        app:layout_constraintBottom_toTopOf="@+id/textViewCadastrar"
+        app:layout_constraintEnd_toStartOf="@+id/guidelineBordaDireita"
+        app:layout_constraintStart_toStartOf="@+id/guidelineBordaEsquerda"
+        app:layout_constraintTop_toTopOf="@+id/guidelineLogo"
+        app:srcCompat="@drawable/icone" />
+
+    <ImageView
+        android:id="@+id/imageView3"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="350dp"
+        app:layout_constraintBottom_toTopOf="@+id/guidelineLogo"
+        app:layout_constraintEnd_toStartOf="@+id/guidelineBordaDireita"
+        app:layout_constraintStart_toStartOf="@+id/guidelineBordaEsquerda"
+        app:layout_constraintTop_toTopOf="@+id/guidelineBordaTopo"
+        app:srcCompat="@drawable/baseline_arrow_back_24" />
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/guideline"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintGuide_begin="99dp" />
+
+    <ImageView
+        android:id="@+id/imageView10"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintBottom_toBottomOf="@+id/buttonBordaNome"
+        app:layout_constraintEnd_toStartOf="@+id/guideline"
+        app:layout_constraintStart_toStartOf="@+id/buttonBordaNome"
+        app:layout_constraintTop_toTopOf="@+id/buttonBordaNome"
+        app:srcCompat="@drawable/baseline_person_24" />
+
+    <ImageView
+        android:id="@+id/imageView11"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintBottom_toBottomOf="@+id/buttonBordaEmail"
+        app:layout_constraintEnd_toStartOf="@+id/guideline"
+        app:layout_constraintStart_toStartOf="@+id/buttonBordaEmail"
+        app:layout_constraintTop_toTopOf="@+id/buttonBordaEmail"
+        app:srcCompat="@drawable/baseline_email_24" />
+
+    <ImageView
+        android:id="@+id/imageView12"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintBottom_toBottomOf="@+id/buttonBordaCpf"
+        app:layout_constraintEnd_toStartOf="@+id/guideline"
+        app:layout_constraintStart_toStartOf="@+id/buttonBordaCpf"
+        app:layout_constraintTop_toTopOf="@+id/buttonBordaCpf"
+        app:srcCompat="@drawable/baseline_contact_mail_24" />
+
+    <ImageView
+        android:id="@+id/imageView13"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintBottom_toBottomOf="@+id/buttonBordaTelefone"
+        app:layout_constraintEnd_toStartOf="@+id/editTextTelefone"
+        app:layout_constraintStart_toStartOf="@+id/buttonBordaTelefone"
+        app:layout_constraintTop_toTopOf="@+id/buttonBordaTelefone"
+        app:srcCompat="@drawable/baseline_call_24" />
+
+    <ImageView
+        android:id="@+id/imageView14"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintBottom_toBottomOf="@+id/buttonBordaSenha"
+        app:layout_constraintEnd_toStartOf="@+id/guideline"
+        app:layout_constraintStart_toStartOf="@+id/buttonBordaSenha"
+        app:layout_constraintTop_toTopOf="@+id/buttonBordaSenha"
+        app:srcCompat="@drawable/baseline_lock_24" />
+
+    <ImageView
+        android:id="@+id/imageView15"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="350dp"
+        app:layout_constraintBottom_toTopOf="@+id/guidelineLogo"
+        app:layout_constraintEnd_toStartOf="@+id/guidelineBordaDireita"
+        app:layout_constraintStart_toStartOf="@+id/guidelineBordaEsquerda"
+        app:layout_constraintTop_toTopOf="@+id/guidelineBordaTopo"
+        app:srcCompat="@drawable/baseline_dehaze_24" />
 </androidx.constraintlayout.widget.ConstraintLayout>
