@@ -8,9 +8,11 @@ import com.android.volley.toolbox.Volley;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.AuthFailureError;
 import com.android.volley.VolleyError;
+import org.json.JSONArray;
 import org.json.JSONObject;
 import org.json.JSONException;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
 
 public class APIService {
@@ -31,7 +33,7 @@ public class APIService {
 
     public void login(Context context, String email, String password,
                       final APIServiceCallback callback) {
-        String url = "http://10.0.2.2:8000/api/v1/auth/login";
+        String url = "http://177.44.248.32:80/api/v1/auth/login";
         JSONObject params = new JSONObject();
         try {
             params.put("login", email);
@@ -44,24 +46,75 @@ public class APIService {
                 Request.Method.POST, url, params,
                 response -> {
                     String token = response.optString("token", null);
+                    SharedPreferences prefs = context.getSharedPreferences("safetrace_prefs", Context.MODE_PRIVATE);
                     if (token != null) {
-                        SharedPreferences prefs = context.getSharedPreferences("safetrace_prefs", Context.MODE_PRIVATE);
                         prefs.edit().putString("api_token", token).apply();
                     }
+                    
+                    // Tentar salvar nome do usuário se estiver na resposta do login
+                    try {
+                        String userName = null;
+                        if (response.has("user")) {
+                            JSONObject user = response.getJSONObject("user");
+                            userName = user.optString("name", null);
+                        } else if (response.has("name")) {
+                            userName = response.optString("name", null);
+                        }
+                        
+                        if (userName != null && !userName.isEmpty()) {
+                            prefs.edit().putString("user_name", userName).apply();
+                            android.util.Log.d("APIService", "Nome salvo da resposta de login: " + userName);
+                        }
+                    } catch (JSONException e) {
+                        // Ignorar se não tiver nome na resposta
+                    }
+                    
                     callback.onSuccess(response);
                 },
                 error -> {
-                    String message = "Login failed";
+                    String message = "Erro ao fazer login. Verifique suas credenciais.";
                     if (error.networkResponse != null && error.networkResponse.data != null) {
                         try {
                             String responseBody = new String(error.networkResponse.data, "utf-8");
                             JSONObject data = new JSONObject(responseBody);
-                            message = data.optString("error", message);
+                            
+                            // Tentar vários campos possíveis de erro
+                            if (data.has("error")) {
+                                message = data.optString("error", message);
+                            } else if (data.has("message")) {
+                                message = data.optString("message", message);
+                            } else if (data.has("errors")) {
+                                // Laravel pode retornar erros em formato de objeto
+                                try {
+                                    JSONObject errors = data.optJSONObject("errors");
+                                    if (errors != null && errors.length() > 0) {
+                                        // Pegar o primeiro erro disponível
+                                        Iterator<String> keys = errors.keys();
+                                        if (keys.hasNext()) {
+                                            String firstKey = keys.next();
+                                            Object errorObj = errors.get(firstKey);
+                                            if (errorObj instanceof String) {
+                                                message = (String) errorObj;
+                                            } else if (errorObj instanceof JSONArray) {
+                                                JSONArray errorArray = (JSONArray) errorObj;
+                                                if (errorArray.length() > 0) {
+                                                    message = errorArray.getString(0);
+                                                }
+                                            }
+                                        }
+                                    }
+                                } catch (Exception e) {
+                                    // Se falhar, usar mensagem padrão
+                                }
+                            }
+                            
+                            // Traduzir mensagens comuns
+                            message = translateErrorMessage(message);
                         } catch (Exception e) {
                             e.printStackTrace();
                         }
                     } else if (error.getMessage() != null) {
-                        message = error.getMessage();
+                        message = translateErrorMessage(error.getMessage());
                     }
                     callback.onError(message);
                 }
@@ -71,7 +124,7 @@ public class APIService {
 
     public void register(Context context, String name, String email, String phone, String document, String password,
                          final APIServiceCallback callback) {
-        String url = "http://10.0.2.2:8000/api/v1/auth/register";
+        String url = "http://177.44.248.32:80/api/v1/auth/register";
         JSONObject params = new JSONObject();
         try {
             params.put("name", name);
@@ -87,10 +140,39 @@ public class APIService {
                 Request.Method.POST, url, params,
                 response -> {
                     String token = response.optString("token", null);
+                    SharedPreferences prefs = context.getSharedPreferences("safetrace_prefs", Context.MODE_PRIVATE);
                     if (token != null) {
-                        SharedPreferences prefs = context.getSharedPreferences("safetrace_prefs", Context.MODE_PRIVATE);
                         prefs.edit().putString("api_token", token).apply();
                     }
+                    
+                    // Tentar salvar nome do usuário se estiver na resposta
+                    try {
+                        String userName = null;
+                        if (response.has("name")) {
+                            userName = response.optString("name", null);
+                        } else if (response.has("user")) {
+                            JSONObject user = response.getJSONObject("user");
+                            userName = user.optString("name", null);
+                        } else if (response.has("data")) {
+                            JSONObject data = response.getJSONObject("data");
+                            userName = data.optString("name", null);
+                        }
+                        
+                        // Se não encontrou na resposta, usar o nome passado como parâmetro
+                        if ((userName == null || userName.isEmpty()) && name != null && !name.isEmpty()) {
+                            userName = name;
+                        }
+                        
+                        if (userName != null && !userName.isEmpty()) {
+                            prefs.edit().putString("user_name", userName).apply();
+                        }
+                    } catch (JSONException e) {
+                        // Se não tiver nome na resposta, usar o nome passado como parâmetro
+                        if (name != null && !name.isEmpty()) {
+                            prefs.edit().putString("user_name", name).apply();
+                        }
+                    }
+                    
                     callback.onSuccess(response);
                 },
                 error -> {
@@ -113,7 +195,7 @@ public class APIService {
     }
 
     public void logout(Context context, final APIServiceCallback callback) {
-        String url = "http://10.0.2.2:8000/api/v1/auth/logout";
+        String url = "http://177.44.248.32:80/api/v1/auth/logout";
 
         SharedPreferences prefs = context.getSharedPreferences("safetrace_prefs", Context.MODE_PRIVATE);
         String token = prefs.getString("api_token", null);
@@ -158,7 +240,7 @@ public class APIService {
     }
 
     public void getContacts(Context context, boolean includeUser, final APIServiceCallback callback) {
-        String url = "http://10.0.2.2:8000/api/v1/contact";
+        String url = "http://177.44.248.32:80/api/v1/contact";
         if (includeUser) {
             url += "?include=user";
         }
@@ -201,6 +283,157 @@ public class APIService {
         requestQueue.add(jsonObjectRequest);
     }
 
+    public void getUserProfile(Context context, final APIServiceCallback callback) {
+        String url = "http://177.44.248.32:80/api/v1/auth/me";
+
+        SharedPreferences prefs = context.getSharedPreferences("safetrace_prefs", Context.MODE_PRIVATE);
+        String token = prefs.getString("api_token", null);
+
+        if (token == null || token.isEmpty()) {
+            callback.onError("User not authenticated");
+            return;
+        }
+
+        JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(
+                Request.Method.GET, url, null,
+                response -> {
+                    // Salvar user_id e nome do usuário do perfil
+                    try {
+                        String userId = null;
+                        String userName = null;
+                        
+                        if (response.has("id")) {
+                            userId = response.optString("id", null);
+                            userName = response.optString("name", null);
+                        } else if (response.has("user")) {
+                            JSONObject user = response.getJSONObject("user");
+                            userId = user.optString("id", null);
+                            userName = user.optString("name", null);
+                        } else if (response.has("data")) {
+                            JSONObject data = response.getJSONObject("data");
+                            userId = data.optString("id", null);
+                            userName = data.optString("name", null);
+                        }
+                        
+                        SharedPreferences prefs2 = context.getSharedPreferences("safetrace_prefs", Context.MODE_PRIVATE);
+                        android.content.SharedPreferences.Editor editor = prefs2.edit();
+                        if (userId != null && !userId.isEmpty()) {
+                            editor.putString("user_id", userId);
+                            android.util.Log.d("APIService", "User ID salvo: " + userId);
+                        }
+                        if (userName != null && !userName.isEmpty()) {
+                            editor.putString("user_name", userName);
+                            android.util.Log.d("APIService", "User name salvo: " + userName);
+                        } else {
+                            android.util.Log.w("APIService", "Nome do usuário não encontrado na resposta");
+                        }
+                        editor.apply();
+                    } catch (JSONException e) {
+                        android.util.Log.e("APIService", "Erro ao parsear resposta do perfil", e);
+                        // Ignorar erro de parsing
+                    }
+                    callback.onSuccess(response);
+                },
+                error -> {
+                    String message = "Failed to fetch user profile";
+                    if (error.networkResponse != null && error.networkResponse.data != null) {
+                        try {
+                            String responseBody = new String(error.networkResponse.data, "utf-8");
+                            JSONObject data = new JSONObject(responseBody);
+                            message = data.optString("error", message);
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
+                    }
+                    callback.onError(message);
+                }
+        ) {
+            @Override
+            public Map<String, String> getHeaders() throws AuthFailureError {
+                Map<String, String> headers = new HashMap<>();
+                headers.put("Authorization", "Bearer " + token);
+                return headers;
+            }
+        };
+
+        requestQueue.add(jsonObjectRequest);
+    }
+
+    public void addContactByCode(Context context, String code, final APIServiceCallback callback) {
+        String url = "http://177.44.248.32:80/api/v1/contact";
+        JSONObject params = new JSONObject();
+        try {
+            params.put("code", code);
+        } catch (JSONException e) {
+            callback.onError("JSON error");
+            return;
+        }
+
+        SharedPreferences prefs = context.getSharedPreferences("safetrace_prefs", Context.MODE_PRIVATE);
+        String token = prefs.getString("api_token", null);
+
+        if (token == null || token.isEmpty()) {
+            callback.onError("User not authenticated");
+            return;
+        }
+
+        JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(
+                Request.Method.POST, url, params,
+                response -> {
+                    callback.onSuccess(response);
+                },
+                error -> {
+                    String message = "Failed to add contact";
+                    if (error.networkResponse != null && error.networkResponse.data != null) {
+                        try {
+                            String responseBody = new String(error.networkResponse.data, "utf-8");
+                            JSONObject data = new JSONObject(responseBody);
+                            message = data.optString("error", message);
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
+                    }
+                    callback.onError(message);
+                }
+        ) {
+            @Override
+            public Map<String, String> getHeaders() throws AuthFailureError {
+                Map<String, String> headers = new HashMap<>();
+                headers.put("Authorization", "Bearer " + token);
+                headers.put("Content-Type", "application/json");
+                return headers;
+            }
+        };
+
+        requestQueue.add(jsonObjectRequest);
+    }
+
+    private String translateErrorMessage(String error) {
+        if (error == null) {
+            return "Erro desconhecido";
+        }
+        
+        String lowerError = error.toLowerCase();
+        
+        // Traduzir mensagens comuns da API
+        if (lowerError.contains("no query results") || lowerError.contains("user not found")) {
+            return "Email ou senha incorretos";
+        }
+        if (lowerError.contains("unauthorized") || lowerError.contains("invalid credentials")) {
+            return "Email ou senha incorretos";
+        }
+        if (lowerError.contains("password")) {
+            return "Senha incorreta";
+        }
+        if (lowerError.contains("email") || lowerError.contains("login")) {
+            return "Email não encontrado";
+        }
+        if (lowerError.contains("network") || lowerError.contains("connection")) {
+            return "Erro de conexão. Verifique sua internet.";
+        }
+        
+        return error;
+    }
 
     public interface APIServiceCallback {
         void onSuccess(JSONObject response);

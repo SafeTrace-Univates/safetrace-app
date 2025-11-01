@@ -1,0 +1,183 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginTop="8dp"
+    android:layout_marginBottom="12dp"
+    android:background="@drawable/bg_card_borda_rosa"
+    android:elevation="2dp"
+    android:foreground="?android:attr/selectableItemBackground"
+    android:orientation="vertical"
+    android:padding="16dp">
+
+    <!-- Data -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="0dp"
+        android:gravity="center_vertical"
+        android:orientation="horizontal"
+        android:paddingBottom="8dp">
+        <ImageView
+            android:layout_width="25dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="0"
+            app:srcCompat="@drawable/baseline_calendar_month_24" />
+        <TextView
+            android:id="@+id/txtData"
+            android:layout_width="wrap_content"
+            android:layout_height="24dp"
+            android:layout_marginStart="10dp"
+            android:fontFamily="@font/poppins"
+            android:text="21/10/2025"
+            android:textColor="#D08B8B"
+            android:textSize="20sp" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="8dp"
+        android:background="@drawable/bg_divisoria_rosa_clara"
+        android:gravity="center_vertical"
+        android:orientation="horizontal"
+        android:paddingBottom="3dp">
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="0dp"
+        android:gravity="center_vertical"
+        android:orientation="horizontal"
+        android:paddingBottom="0dp">
+        <ImageView
+            android:layout_width="25dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="0"
+            app:srcCompat="@drawable/baseline_watch_later_24" />
+        <TextView
+            android:id="@+id/txtHoraInicio"
+            android:layout_width="wrap_content"
+            android:layout_height="24dp"
+            android:layout_marginStart="10dp"
+            android:fontFamily="@font/poppins"
+            android:text="Início: 14:35"
+            android:textColor="@color/cinza"
+            android:textSize="16sp" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="359dp"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="0dp"
+        android:orientation="vertical"
+        android:paddingBottom="8dp">
+        <TextView
+            android:id="@+id/txtHoraFim"
+            android:layout_width="wrap_content"
+            android:layout_height="24dp"
+            android:layout_marginStart="34dp"
+            android:fontFamily="@font/poppins"
+            android:text="Fim: 14:47"
+            android:textColor="@color/cinza"
+            android:textSize="16sp" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="0dp"
+        android:gravity="center_vertical"
+        android:orientation="horizontal"
+        android:paddingBottom="0dp">
+        <ImageView
+            android:layout_width="25dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="0"
+            app:srcCompat="@drawable/baseline_person_24" />
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="24dp"
+            android:layout_marginStart="10dp"
+            android:layout_marginBottom="0dp"
+            android:fontFamily="@font/poppins"
+            android:text="Acionado por:"
+            android:textColor="@color/black"
+            android:textSize="16sp" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="359dp"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="0dp"
+        android:orientation="vertical"
+        android:paddingBottom="8dp">
+        <TextView
+            android:id="@+id/txtNomeAcionador"
+            android:layout_width="wrap_content"
+            android:layout_height="24dp"
+            android:layout_marginStart="34dp"
+            android:fontFamily="@font/poppins"
+            android:text="Ana Oliveira"
+            android:textColor="@color/cinza"
+            android:textSize="16sp" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="0dp"
+        android:gravity="center_vertical"
+        android:orientation="horizontal"
+        android:paddingBottom="0dp">
+        <ImageView
+            android:layout_width="25dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="0"
+            app:srcCompat="@drawable/baseline_groups_24" />
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="10dp"
+            android:layout_marginBottom="0dp"
+            android:fontFamily="@font/poppins"
+            android:text="Contatos acionados:"
+            android:textColor="#333333"
+            android:textSize="16sp" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="359dp"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="0dp"
+        android:orientation="vertical"
+        android:paddingBottom="8dp">
+        <TextView
+            android:id="@+id/txtNomeAcionados"
+            android:layout_width="wrap_content"
+            android:layout_height="24dp"
+            android:layout_marginStart="34dp"
+            android:fontFamily="@font/poppins"
+            android:text="Maria Silva, João Santos"
+            android:textColor="@color/cinza"
+            android:textSize="16sp" />
+    </LinearLayout>
+
+    <!-- Botão Ver mais -->
+    <android.widget.Button
+        android:id="@+id/btnVerMapa"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:layout_marginTop="12dp"
+        android:background="@drawable/bg_botao_arredondado"
+        android:fontFamily="@font/poppins_semibold"
+        android:padding="10dp"
+        android:text="Ver mais"
+        android:textAllCaps="false"
+        android:textColor="@color/fundo"
+        android:textSize="16sp" />
+</LinearLayout>
+

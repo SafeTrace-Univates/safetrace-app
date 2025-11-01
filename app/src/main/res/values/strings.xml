@@ -45,4 +45,19 @@
     <string name="navigation_drawer_open">Abrir menu de navegação</string>
     <string name="navigation_drawer_close">Fechar menu de navegação</string>
     <string name="nav_header_desc">Cabeçalho do menu de navegação</string>
+    
+    <!-- Historico Activity Strings -->
+    <string name="no_emergencies_registered">Nenhuma emergência registrada</string>
+    <string name="start_time">Início: %s</string>
+    <string name="end_time">Fim: %s</string>
+    <string name="end_time_in_progress">Fim: Em andamento</string>
+    
+    <!-- Trajeto Activity Strings -->
+    <string name="audio_not_available">Áudio não disponível</string>
+    <string name="pause_audio">Pausar Áudio</string>
+    <string name="play_audio">Reproduzir Áudio</string>
+    
+    <!-- Main Activity Strings -->
+    <string name="emergency">Emergência</string>
+    <string name="finish_emergency">Finalizar Emergência</string>
 </resources>

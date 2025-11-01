@@ -4,6 +4,22 @@
 
     <!-- Permissões necessárias para o app -->
     <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.CAMERA" />
+    <uses-permission android:name="android.permission.RECORD_AUDIO" />
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_BACKGROUND_LOCATION" />
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_MICROPHONE" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_LOCATION" />
+    
+    <uses-feature
+        android:name="android.hardware.camera"
+        android:required="true" />
+    <uses-feature
+        android:name="android.hardware.camera.autofocus"
+        android:required="false" />
     <application
         android:allowBackup="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
@@ -25,7 +41,7 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        
+
         <!-- MainActivity - Tela principal com botões de emergência -->
         <activity
             android:name=".MainActivity"
@@ -41,6 +57,35 @@
             android:name=".CadastroContatosActivity"
             android:exported="false" />
         
+        <!-- HistoricoActivity - Tela de histórico de chamadas -->
+        <activity
+            android:name=".HistoricoActivity"
+            android:exported="false" />
+        
+        <!-- ScanQRActivity - Tela para escanear QR Code -->
+        <activity
+            android:name=".ScanQRActivity"
+            android:exported="false"
+            android:screenOrientation="portrait" />
+        
+        <!-- TrajetoActivity - Tela para visualizar trajeto no mapa -->
+        <activity
+            android:name=".TrajetoActivity"
+            android:exported="false"
+            android:screenOrientation="portrait" />
+        
+        <!-- EmergenciaForegroundService - Serviço em foreground para gravação de áudio e localização -->
+        <service
+            android:name=".service.EmergenciaForegroundService"
+            android:enabled="true"
+            android:exported="false"
+            android:foregroundServiceType="microphone|location" />
+
+        <!-- Google Maps API Key -->
+        <meta-data
+            android:name="com.google.android.geo.API_KEY"
+            android:value="AIzaSyDS9wMp_SewVIiH9_cTw46hg1Hi4BsiP1A" />
+
         <meta-data
             android:name="preloaded_fonts"
             android:resource="@array/preloaded_fonts" />

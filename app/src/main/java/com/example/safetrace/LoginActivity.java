@@ -1,9 +1,13 @@
 package com.example.safetrace;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.text.TextUtils;
+import android.text.method.HideReturnsTransformationMethod;
+import android.text.method.PasswordTransformationMethod;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -20,10 +24,26 @@ public class LoginActivity extends AppCompatActivity {
     private EditText editTextSenha;
     private TextView textViewCadastro;
     private MaterialButton buttonLogin;
+    private ImageView imageViewToggleSenha;
+    private boolean isPasswordVisible = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        
+        // Verificar se já existe uma sessão ativa (token salvo)
+        SharedPreferences prefs = getSharedPreferences("safetrace_prefs", MODE_PRIVATE);
+        String token = prefs.getString("api_token", null);
+        
+        if (token != null && !token.isEmpty()) {
+            // Usuário já está logado, redirecionar para MainActivity
+            android.util.Log.d("LoginActivity", "Token encontrado, redirecionando para MainActivity");
+            Intent intent = new Intent(LoginActivity.this, MainActivity.class);
+            startActivity(intent);
+            finish();
+            return;
+        }
+        
         setContentView(R.layout.activity_login);
 
         initializeViews();
@@ -36,18 +56,10 @@ public class LoginActivity extends AppCompatActivity {
         editTextSenha = findViewById(R.id.editTextSenha);
         textViewCadastro = findViewById(R.id.textViewCadastro);
         buttonLogin = findViewById(R.id.buttonLogin);
+        imageViewToggleSenha = findViewById(R.id.imageViewToggleSenha);
     }
 
     private void setupClickListeners() {
-        // Limpar placeholder quando o usuário clicar no campo de login
-        editTextLogin.setOnFocusChangeListener((v, hasFocus) -> {
-            if (hasFocus && editTextLogin.getText().toString().equals(getString(R.string.login_placeholder))) {
-                editTextLogin.setText("");
-            } else if (!hasFocus && TextUtils.isEmpty(editTextLogin.getText().toString())) {
-                editTextLogin.setText(getString(R.string.login_placeholder));
-            }
-        });
-
         // Botão de login
         buttonLogin.setOnClickListener(v -> performLogin());
 
@@ -62,6 +74,26 @@ public class LoginActivity extends AppCompatActivity {
             performLogin();
             return true;
         });
+
+        // Toggle mostrar/ocultar senha
+        imageViewToggleSenha.setOnClickListener(v -> togglePasswordVisibility());
+    }
+
+    private void togglePasswordVisibility() {
+        if (isPasswordVisible) {
+            // Ocultar senha
+            editTextSenha.setTransformationMethod(PasswordTransformationMethod.getInstance());
+            imageViewToggleSenha.setImageResource(R.drawable.baseline_visibility_off_24);
+            isPasswordVisible = false;
+        } else {
+            // Mostrar senha
+            editTextSenha.setTransformationMethod(HideReturnsTransformationMethod.getInstance());
+            imageViewToggleSenha.setImageResource(R.drawable.baseline_visibility_24);
+            isPasswordVisible = true;
+        }
+        
+        // Mover cursor para o final
+        editTextSenha.setSelection(editTextSenha.getText().length());
     }
 
     private void performLogin() {
@@ -69,8 +101,8 @@ public class LoginActivity extends AppCompatActivity {
         String senha = editTextSenha.getText().toString().trim();
 
         // Validação básica
-        if (TextUtils.isEmpty(login) || login.equals(getString(R.string.login_placeholder))) {
-            Toast.makeText(this, getString(R.string.enter_login), Toast.LENGTH_SHORT).show();
+        if (TextUtils.isEmpty(login)) {
+            Toast.makeText(this, "Por favor, informe seu email", Toast.LENGTH_SHORT).show();
             return;
         }
 
@@ -83,15 +115,45 @@ public class LoginActivity extends AppCompatActivity {
             @Override
             public void onSuccess(JSONObject response) {
                 String token = response.optString("token");
-                Intent intent = new Intent(LoginActivity.this, MainActivity.class);
-                startActivity(intent);
-                finish();
+                
+                // Buscar informações do usuário para obter o ID e nome
+                if (token != null && !token.isEmpty()) {
+                    // Tentar buscar perfil, mas não bloquear login se falhar
+                    APIService.getInstance(LoginActivity.this).getUserProfile(LoginActivity.this, new APIService.APIServiceCallback() {
+                        @Override
+                        public void onSuccess(JSONObject userResponse) {
+                            // Verificar se o nome foi salvo
+                            SharedPreferences prefs = getSharedPreferences("safetrace_prefs", MODE_PRIVATE);
+                            String nomeSalvo = prefs.getString("user_name", null);
+                            android.util.Log.d("LoginActivity", "Nome salvo após getUserProfile: " + nomeSalvo);
+                            
+                            // Usuário logado com sucesso, ID e nome já foram salvos pelo APIService
+                            Intent intent = new Intent(LoginActivity.this, MainActivity.class);
+                            startActivity(intent);
+                            finish();
+                        }
+
+                        @Override
+                        public void onError(String error) {
+                            android.util.Log.w("LoginActivity", "Erro ao buscar perfil do usuário (pode ser esperado): " + error);
+                            // Mesmo com erro ao buscar perfil, permitir login
+                            // O nome pode estar na resposta do login
+                            Intent intent = new Intent(LoginActivity.this, MainActivity.class);
+                            startActivity(intent);
+                            finish();
+                        }
+                    });
+                } else {
+                    Intent intent = new Intent(LoginActivity.this, MainActivity.class);
+                    startActivity(intent);
+                    finish();
+                }
             }
 
             @Override
             public void onError(String error) {
-                System.out.println(error);
-                Toast.makeText(LoginActivity.this, error, Toast.LENGTH_SHORT).show();
+                // Remover System.out.println em produção
+                Toast.makeText(LoginActivity.this, error, Toast.LENGTH_LONG).show();
             }
         });
     }

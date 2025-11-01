@@ -1,11 +1,15 @@
 package com.example.safetrace;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.text.TextWatcher;
+import android.text.method.HideReturnsTransformationMethod;
+import android.text.method.PasswordTransformationMethod;
 import android.util.Patterns;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.Toast;
 
 import androidx.activity.OnBackPressedCallback;
@@ -23,6 +27,9 @@ public class CadastroActivity extends AppCompatActivity {
     private EditText editTextTelefone;
     private EditText editTextSenha;
     private MaterialButton buttonCadastrar;
+    private ImageView imageViewVoltar;
+    private ImageView imageViewToggleSenha;
+    private boolean isPasswordVisible = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -31,7 +38,6 @@ public class CadastroActivity extends AppCompatActivity {
 
         initializeViews();
         setupClickListeners();
-        setupFocusListeners();
         setupTextWatchers();
         setupBackPressedCallback();
     }
@@ -43,36 +49,41 @@ public class CadastroActivity extends AppCompatActivity {
         editTextTelefone = findViewById(R.id.editTextTelefone);
         editTextSenha = findViewById(R.id.editTextSenha);
         buttonCadastrar = findViewById(R.id.buttonCadastrar);
+        imageViewVoltar = findViewById(R.id.imageView3);
+        imageViewToggleSenha = findViewById(R.id.imageViewToggleSenha);
     }
 
     private void setupClickListeners() {
         buttonCadastrar.setOnClickListener(v -> performCadastro());
-    }
-
-    private void setupFocusListeners() {
-        // Limpar placeholders quando o usuário clicar nos campos
-        setupFocusListener(editTextNome, getString(R.string.name_placeholder));
-        setupFocusListener(editTextEmail, getString(R.string.email_placeholder));
-        setupFocusListener(editTextCpf, getString(R.string.cpf_placeholder));
-        setupFocusListener(editTextTelefone, getString(R.string.phone_placeholder));
-        setupFocusListener(editTextSenha, getString(R.string.password_placeholder));
-    }
-
-    private void setupFocusListener(EditText editText, String placeholder) {
-        editText.setOnFocusChangeListener((v, hasFocus) -> {
-            if (hasFocus && editText.getText().toString().equals(placeholder)) {
-                editText.setText("");
-                if (placeholder.equals(getString(R.string.cpf_placeholder))) {
-                    editText.setInputType(android.text.InputType.TYPE_CLASS_NUMBER);
-                } else if (placeholder.equals(getString(R.string.phone_placeholder))) {
-                    editText.setInputType(android.text.InputType.TYPE_CLASS_PHONE);
-                }
-            } else if (!hasFocus && TextUtils.isEmpty(editText.getText().toString())) {
-                editText.setText(placeholder);
-                editText.setInputType(android.text.InputType.TYPE_CLASS_TEXT);
-            }
+        
+        // Botão voltar
+        imageViewVoltar.setOnClickListener(v -> {
+            Intent intent = new Intent(CadastroActivity.this, LoginActivity.class);
+            startActivity(intent);
+            finish();
         });
+
+        // Toggle mostrar/ocultar senha
+        imageViewToggleSenha.setOnClickListener(v -> togglePasswordVisibility());
     }
+
+    private void togglePasswordVisibility() {
+        if (isPasswordVisible) {
+            // Ocultar senha
+            editTextSenha.setTransformationMethod(PasswordTransformationMethod.getInstance());
+            imageViewToggleSenha.setImageResource(R.drawable.baseline_visibility_off_24);
+            isPasswordVisible = false;
+        } else {
+            // Mostrar senha
+            editTextSenha.setTransformationMethod(HideReturnsTransformationMethod.getInstance());
+            imageViewToggleSenha.setImageResource(R.drawable.baseline_visibility_24);
+            isPasswordVisible = true;
+        }
+        
+        // Mover cursor para o final
+        editTextSenha.setSelection(editTextSenha.getText().length());
+    }
+
 
     private void setupTextWatchers() {
         // Formatação do CPF
@@ -86,7 +97,7 @@ public class CadastroActivity extends AppCompatActivity {
             @Override
             public void afterTextChanged(android.text.Editable s) {
                 String text = s.toString();
-                if (!text.isEmpty() && !text.equals(getString(R.string.cpf_placeholder))) {
+                if (!text.isEmpty()) {
                     String formatted = formatCPF(text);
                     if (!formatted.equals(text)) {
                         editTextCpf.removeTextChangedListener(this);
@@ -109,7 +120,7 @@ public class CadastroActivity extends AppCompatActivity {
             @Override
             public void afterTextChanged(android.text.Editable s) {
                 String text = s.toString();
-                if (!text.isEmpty() && !text.equals(getString(R.string.phone_placeholder))) {
+                if (!text.isEmpty()) {
                     String formatted = formatPhone(text);
                     if (!formatted.equals(text)) {
                         editTextTelefone.removeTextChangedListener(this);
@@ -175,9 +186,35 @@ public class CadastroActivity extends AppCompatActivity {
             @Override
             public void onSuccess(JSONObject response) {
                 String token = response.optString("token");
-                Intent intent = new Intent(CadastroActivity.this, MainActivity.class);
-                startActivity(intent);
-                finish();
+                
+                // Salvar nome do usuário no SharedPreferences
+                SharedPreferences prefs = getSharedPreferences("safetrace_prefs", MODE_PRIVATE);
+                prefs.edit().putString("user_name", nome).apply();
+                
+                // Buscar perfil do usuário para obter ID
+                if (token != null && !token.isEmpty()) {
+                    APIService.getInstance(CadastroActivity.this).getUserProfile(CadastroActivity.this, new APIService.APIServiceCallback() {
+                        @Override
+                        public void onSuccess(JSONObject userResponse) {
+                            // ID e nome já foram salvos
+                            Intent intent = new Intent(CadastroActivity.this, MainActivity.class);
+                            startActivity(intent);
+                            finish();
+                        }
+
+                        @Override
+                        public void onError(String error) {
+                            // Mesmo com erro, continuar
+                            Intent intent = new Intent(CadastroActivity.this, MainActivity.class);
+                            startActivity(intent);
+                            finish();
+                        }
+                    });
+                } else {
+                    Intent intent = new Intent(CadastroActivity.this, MainActivity.class);
+                    startActivity(intent);
+                    finish();
+                }
             }
 
             @Override

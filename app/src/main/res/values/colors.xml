@@ -7,6 +7,7 @@
     <color name="primaria_variacao">#ea9999</color>
     <color name="secundaria">#BA0606</color>
     <color name="secundaria_variacao">#762f2a</color>
+    <color name="emergencia_ativa">#CE7E79</color>
     <color name="fundo">#ffe9e9</color>
     <color name="verde">#a1cf9a</color>
     <color name="cinza">#737373</color>
