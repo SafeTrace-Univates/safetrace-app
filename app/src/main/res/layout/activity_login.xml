@@ -39,13 +39,18 @@
 
 
     <!-- Logo e Título -->
+
     <ImageView
         android:id="@+id/imageViewLogo"
         android:layout_width="104dp"
         android:layout_height="103dp"
+        android:layout_marginTop="135dp"
+        android:layout_marginBottom="10dp"
+        app:layout_constraintBottom_toTopOf="@+id/textTitulo"
         app:layout_constraintEnd_toStartOf="@+id/guidelineBordaDireita"
+        app:layout_constraintHorizontal_bias="0.498"
         app:layout_constraintStart_toStartOf="@+id/guidelineBordaEsquerda"
-        app:layout_constraintTop_toTopOf="@+id/guidelineBordaTopo"
+        app:layout_constraintTop_toTopOf="parent"
         app:srcCompat="@drawable/icone" />
 
     <TextView
@@ -53,22 +58,28 @@
         android:layout_width="215dp"
         android:layout_height="42dp"
         android:layout_marginTop="10dp"
+        android:layout_marginBottom="10dp"
         android:fontFamily="@font/poppins_semibold"
         android:text="SafeTrace"
         android:textAlignment="center"
         android:textColor="@color/primaria"
         android:textSize="28sp"
+        app:layout_constraintBottom_toTopOf="@+id/textViewSuaSegurança"
         app:layout_constraintEnd_toStartOf="@+id/guidelineBordaDireita"
         app:layout_constraintStart_toStartOf="@+id/guidelineBordaEsquerda"
         app:layout_constraintTop_toBottomOf="@+id/imageViewLogo" />
 
 
     <!-- Login -->
+
+
+    <!-- Senha -->
+
     <com.google.android.material.button.MaterialButton
         android:id="@+id/buttonBordaLogin"
-        android:layout_width="380dp"
+        android:layout_width="360dp"
         android:layout_height="60dp"
-        android:layout_marginTop="60dp"
+        android:layout_marginTop="20dp"
         android:backgroundTint="@color/white"
         android:fontFamily="@font/poppins"
         android:stateListAnimator="@null"
@@ -77,15 +88,12 @@
         app:cornerRadius="6dp"
         app:layout_constraintBottom_toTopOf="@+id/buttonBordaSenha"
         app:layout_constraintEnd_toStartOf="@+id/guidelineBordaDireita"
-        app:layout_constraintHorizontal_bias="0.495"
+        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="@+id/guidelineBordaEsquerda"
         app:layout_constraintTop_toBottomOf="@+id/textViewSuaSegurança"
         app:rippleColor="@color/primaria"
         app:strokeColor="@color/primaria"
         app:strokeWidth="2dp" />
-
-
-    <!-- Senha -->
 
     <EditText
         android:id="@+id/editTextLogin"
@@ -106,26 +114,28 @@
         app:layout_constraintTop_toTopOf="@+id/buttonBordaLogin"
         app:layout_constraintVertical_bias="0.62" />
 
+    <!-- Botão Login -->
+
     <com.google.android.material.button.MaterialButton
         android:id="@+id/buttonBordaSenha"
-        android:layout_width="380dp"
+        android:layout_width="360dp"
         android:layout_height="60dp"
-        android:layout_marginTop="30dp"
+        android:layout_marginTop="28dp"
+        android:layout_marginBottom="12dp"
         android:backgroundTint="@color/white"
         android:fontFamily="@font/poppins"
         android:stateListAnimator="@null"
         android:text="                        "
         android:textColor="@color/primaria"
         app:cornerRadius="6dp"
+        app:layout_constraintBottom_toTopOf="@+id/textViewCadastro"
         app:layout_constraintEnd_toStartOf="@+id/guidelineBordaDireita"
-        app:layout_constraintHorizontal_bias="0.495"
+        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="@+id/guidelineBordaEsquerda"
         app:layout_constraintTop_toBottomOf="@+id/buttonBordaLogin"
         app:rippleColor="@color/primaria"
         app:strokeColor="@color/primaria"
         app:strokeWidth="2dp" />
-
-    <!-- Botão Login -->
 
     <EditText
         android:id="@+id/editTextSenha"
@@ -151,22 +161,27 @@
         android:id="@+id/imageViewToggleSenha"
         android:layout_width="30dp"
         android:layout_height="30dp"
+        android:layout_marginStart="8dp"
         android:layout_marginEnd="16dp"
         android:background="?attr/selectableItemBackgroundBorderless"
-        android:padding="6dp"
         android:clickable="true"
         android:focusable="true"
+        android:padding="6dp"
         app:layout_constraintBottom_toBottomOf="@+id/buttonBordaSenha"
         app:layout_constraintEnd_toEndOf="@+id/buttonBordaSenha"
+        app:layout_constraintStart_toEndOf="@+id/editTextSenha"
         app:layout_constraintTop_toTopOf="@+id/buttonBordaSenha"
         app:layout_constraintVertical_bias="0.5"
         app:srcCompat="@drawable/baseline_visibility_off_24" />
+
+    <!-- Cadastre-se -->
 
     <com.google.android.material.button.MaterialButton
         android:id="@+id/buttonLogin"
         android:layout_width="200dp"
         android:layout_height="50dp"
-        android:layout_marginTop="20dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginBottom="39dp"
         android:backgroundTint="@color/verde"
         android:fontFamily="@font/poppins_semibold"
         android:stateListAnimator="@null"
@@ -175,56 +190,62 @@
         android:textColor="@color/fundo"
         android:textSize="20sp"
         app:cornerRadius="6dp"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@+id/guidelineBordaDireita"
-        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintHorizontal_bias="0.497"
         app:layout_constraintStart_toStartOf="@+id/guidelineBordaEsquerda"
         app:layout_constraintTop_toBottomOf="@+id/textViewEsqueciSenha"
         app:rippleColor="@color/verde"
         app:strokeColor="@color/verde"
         app:strokeWidth="2dp" />
 
-    <!-- Cadastre-se -->
-
     <TextView
         android:id="@+id/textViewCadastro"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="20dp"
-        android:layout_marginEnd="44dp"
+        android:layout_marginStart="14dp"
+        android:layout_marginTop="12dp"
+        android:layout_marginEnd="45dp"
+        android:layout_marginBottom="8dp"
         android:fontFamily="@font/poppins_semibold"
         android:text="Cadastre-se aqui"
         android:textAlignment="center"
         android:textColor="@color/primaria"
         android:textSize="16sp"
-        app:layout_constraintBottom_toTopOf="@+id/guidelineBordaFim"
-        app:layout_constraintEnd_toStartOf="@+id/guidelineBordaDireita"
-        app:layout_constraintTop_toBottomOf="@+id/buttonLogin" />
+        app:layout_constraintBottom_toTopOf="@+id/textViewEsqueciSenha"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/textViewNaoConta"
+        app:layout_constraintTop_toBottomOf="@+id/buttonBordaSenha" />
 
     <TextView
         android:id="@+id/textViewNaoConta"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="44dp"
-        android:layout_marginTop="20dp"
+        android:layout_marginStart="39dp"
+        android:layout_marginTop="25dp"
+        android:layout_marginEnd="14dp"
+        android:layout_marginBottom="8dp"
         android:fontFamily="@font/poppins"
         android:text="Não tem uma conta?"
         android:textColor="@color/primaria_variacao"
         android:textSize="16sp"
-        app:layout_constraintBottom_toTopOf="@+id/guidelineBordaFim"
-        app:layout_constraintStart_toStartOf="@+id/guidelineBordaEsquerda"
-        app:layout_constraintTop_toBottomOf="@+id/buttonLogin" />
+        app:layout_constraintBottom_toTopOf="@+id/textViewEsqueciSenha"
+        app:layout_constraintEnd_toStartOf="@+id/textViewCadastro"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/buttonBordaSenha" />
 
     <TextView
         android:id="@+id/textViewEsqueciSenha"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="20dp"
+        android:layout_marginTop="60dp"
+        android:layout_marginBottom="8dp"
         android:fontFamily="@font/poppins"
         android:text="Esqueci minha senha"
         android:textColor="@color/primaria_variacao"
         android:textSize="16sp"
+        app:layout_constraintBottom_toTopOf="@+id/buttonLogin"
         app:layout_constraintEnd_toStartOf="@+id/guidelineBordaDireita"
-        app:layout_constraintHorizontal_bias="0.926"
         app:layout_constraintStart_toStartOf="@+id/guidelineBordaEsquerda"
         app:layout_constraintTop_toBottomOf="@+id/buttonBordaSenha" />
 
@@ -232,13 +253,18 @@
         android:id="@+id/textViewSuaSegurança"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="20dp"
+        android:layout_marginStart="70dp"
+        android:layout_marginTop="10dp"
+        android:layout_marginEnd="69dp"
+        android:layout_marginBottom="30dp"
         android:fontFamily="@font/poppins"
         android:text="Sua Segurança em primeiro lugar"
         android:textColor="@color/primaria_variacao"
         android:textSize="16sp"
-        app:layout_constraintTop_toBottomOf="@+id/textTitulo"
-        tools:layout_editor_absoluteX="89dp" />
+        app:layout_constraintBottom_toTopOf="@+id/buttonBordaLogin"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/textTitulo" />
 
     <ImageView
         android:id="@+id/imageView5"

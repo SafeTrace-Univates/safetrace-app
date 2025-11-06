@@ -16,6 +16,22 @@
 
     <!-- Guidelines -->
 
+        <TextView
+            android:id="@+id/textViewServicosEmergencia2"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="4dp"
+            android:layout_marginTop="3dp"
+            android:layout_marginEnd="64dp"
+            android:layout_marginBottom="9dp"
+            android:fontFamily="@font/poppins_semibold"
+            android:text="Serviços de Emergência"
+            android:textSize="20sp"
+            app:layout_constraintBottom_toTopOf="@+id/scrollViewContatosEmergencia"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@+id/imageViewContato3"
+            app:layout_constraintTop_toBottomOf="@+id/buttonEmergencia" />
+
         <androidx.constraintlayout.widget.Guideline
             android:id="@+id/guidelineBordaTopo"
             android:layout_width="wrap_content"
@@ -30,12 +46,19 @@
         android:orientation="vertical"
         app:layout_constraintGuide_begin="16dp" />
 
-    <androidx.constraintlayout.widget.Guideline
-        android:id="@+id/guidelineBordaDireita"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:orientation="vertical"
-        app:layout_constraintGuide_end="16dp" />
+        <androidx.constraintlayout.widget.Guideline
+            android:id="@+id/guidelineBordaDireita"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="395dp"
+            android:layout_marginEnd="16dp"
+            android:layout_marginBottom="731dp"
+            android:orientation="vertical"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintGuide_end="16dp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
 
     <androidx.constraintlayout.widget.Guideline
         android:id="@+id/guidelineLogo"
@@ -60,37 +83,43 @@
 
     <!-- Logo e Título -->
 
-    <ImageView
-        android:id="@+id/imageViewLogo"
-        android:layout_width="38dp"
-        android:layout_height="70dp"
-        android:layout_marginTop="16dp"
-        app:layout_constraintBottom_toTopOf="@+id/guidelineLogo"
-        app:layout_constraintStart_toStartOf="@+id/guidelineBordaEsquerda"
-        app:layout_constraintTop_toTopOf="parent"
-        app:srcCompat="@drawable/icone" />
+        <ImageView
+            android:id="@+id/imageViewLogo"
+            android:layout_width="38dp"
+            android:layout_height="70dp"
+            android:layout_marginTop="16dp"
+            android:layout_marginEnd="4dp"
+            app:layout_constraintBottom_toTopOf="@+id/guidelineLogo"
+            app:layout_constraintEnd_toStartOf="@+id/textTitulo"
+            app:layout_constraintStart_toStartOf="@+id/guidelineBordaEsquerda"
+            app:layout_constraintTop_toTopOf="parent"
+            app:srcCompat="@drawable/icone" />
 
-    <TextView
-        android:id="@+id/textTitulo"
-        android:layout_width="173dp"
-        android:layout_height="23dp"
-        android:layout_marginStart="4dp"
-        android:fontFamily="@font/poppins_semibold"
-        android:text="SafeTrace"
-        android:textColor="@color/primaria"
-        android:textSize="20sp"
-        app:layout_constraintBottom_toTopOf="@+id/guidelineLogo"
-        app:layout_constraintStart_toEndOf="@+id/imageViewLogo"
-        app:layout_constraintTop_toTopOf="@+id/guidelineBordaTopo" />
+        <TextView
+            android:id="@+id/textTitulo"
+            android:layout_width="173dp"
+            android:layout_height="23dp"
+            android:layout_marginStart="4dp"
+            android:layout_marginEnd="20dp"
+            android:fontFamily="@font/poppins_semibold"
+            android:text="SafeTrace"
+            android:textColor="@color/primaria"
+            android:textSize="20sp"
+            app:layout_constraintBottom_toTopOf="@+id/guidelineLogo"
+            app:layout_constraintEnd_toStartOf="@+id/imageViewMenu"
+            app:layout_constraintStart_toEndOf="@+id/imageViewLogo"
+            app:layout_constraintTop_toTopOf="@+id/guidelineBordaTopo" />
 
-    <ImageView
-        android:id="@+id/imageViewMenu"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        app:layout_constraintBottom_toTopOf="@+id/guidelineLogo"
-        app:layout_constraintEnd_toStartOf="@+id/guidelineBordaDireita"
-        app:layout_constraintTop_toTopOf="@+id/guidelineBordaTopo"
-        app:srcCompat="@drawable/baseline_dehaze_24" />
+        <ImageView
+            android:id="@+id/imageViewMenu"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="20dp"
+            app:layout_constraintBottom_toTopOf="@+id/guidelineLogo"
+            app:layout_constraintEnd_toStartOf="@+id/guidelineBordaDireita"
+            app:layout_constraintStart_toEndOf="@+id/textTitulo"
+            app:layout_constraintTop_toTopOf="@+id/guidelineBordaTopo"
+            app:srcCompat="@drawable/baseline_dehaze_24" />
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/buttonEmergencia"
@@ -114,243 +143,232 @@
 
     <!-- ScrollView Contatos de emergência -->
 
-    <ScrollView
-        android:id="@+id/scrollViewContatosEmergencia"
-        android:layout_width="380dp"
-        android:layout_height="500dp"
-        app:layout_constraintBottom_toTopOf="@+id/guidelineBordaFim"
-        app:layout_constraintEnd_toStartOf="@+id/guidelineBordaDireita"
-        app:layout_constraintStart_toStartOf="@+id/guidelineBordaEsquerda"
-        app:layout_constraintTop_toTopOf="@+id/textViewServicosEmergencia"
-        app:layout_constraintVertical_bias="0.479">
-
-        <LinearLayout
-            android:id="@+id/layoutContatosEmergencia"
-            android:layout_width="370dp"
-            android:layout_height="wrap_content"
-            android:gravity="center_horizontal"
-            android:orientation="vertical"
-            android:paddingTop="4dp"
-            android:paddingBottom="4dp">
-
-            <!-- Botão Polícia Militar -->
+        <ScrollView
+            android:id="@+id/scrollViewContatosEmergencia"
+            android:layout_width="380dp"
+            android:layout_height="0dp"
+            app:layout_constraintBottom_toTopOf="@+id/guidelineBordaFim"
+            app:layout_constraintEnd_toStartOf="@+id/guidelineBordaDireita"
+            app:layout_constraintHorizontal_bias="0.0"
+            app:layout_constraintStart_toStartOf="@+id/guidelineBordaEsquerda"
+            app:layout_constraintTop_toBottomOf="@+id/textViewServicosEmergencia2">
 
             <LinearLayout
-                android:id="@+id/buttonPoliciaMilitar"
-                android:layout_width="360dp"
-                android:layout_height="80dp"
-                android:layout_marginBottom="10dp"
-                android:background="@drawable/bg_card_borda_rosa"
-                android:orientation="horizontal"
-                android:gravity="center_vertical"
-                android:paddingHorizontal="16dp"
-                android:clickable="true"
-                android:focusable="true">
+                android:id="@+id/layoutContatosEmergencia"
+                android:layout_width="370dp"
+                android:layout_height="wrap_content"
+                android:gravity="center_horizontal"
+                android:orientation="vertical"
+                android:paddingTop="4dp"
+                android:paddingBottom="4dp">
 
-                <ImageView
-                    android:layout_width="32dp"
-                    android:layout_height="32dp"
-                    android:src="@drawable/baseline_minor_crash_24" />
+                <!-- Botão Polícia Militar -->
 
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="16dp"
-                    android:text="Polícia Militar"
-                    android:textColor="@color/black"
-                    android:textSize="20sp"
-                    android:fontFamily="@font/poppins" />
+                <!-- Corpo de Bombeiros -->
+
+                <LinearLayout
+                    android:id="@+id/buttonPoliciaMilitar"
+                    android:layout_width="360dp"
+                    android:layout_height="80dp"
+                    android:layout_marginBottom="10dp"
+                    android:background="@drawable/bg_card_borda_rosa"
+                    android:clickable="true"
+                    android:focusable="true"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal"
+                    android:paddingHorizontal="16dp">
+
+                    <ImageView
+                        android:layout_width="32dp"
+                        android:layout_height="32dp"
+                        android:src="@drawable/baseline_minor_crash_24" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="16dp"
+                        android:fontFamily="@font/poppins"
+                        android:text="Polícia Militar"
+                        android:textColor="@color/black"
+                        android:textSize="20sp" />
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:id="@+id/buttonBombeiros"
+                    android:layout_width="360dp"
+                    android:layout_height="80dp"
+                    android:layout_marginBottom="10dp"
+                    android:background="@drawable/bg_card_borda_rosa"
+                    android:clickable="true"
+                    android:focusable="true"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal"
+                    android:paddingHorizontal="16dp">
+
+                    <ImageView
+                        android:layout_width="32dp"
+                        android:layout_height="32dp"
+                        android:src="@drawable/baseline_health_and_safety_24" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="16dp"
+                        android:fontFamily="@font/poppins"
+                        android:text="Corpo de Bombeiros"
+                        android:textColor="@color/black"
+                        android:textSize="20sp" />
+
+                </LinearLayout>
+
+                <!-- SAMU -->
+
+                <LinearLayout
+                    android:id="@+id/buttonSamu"
+                    android:layout_width="360dp"
+                    android:layout_height="80dp"
+                    android:layout_marginBottom="10dp"
+                    android:background="@drawable/bg_card_borda_rosa"
+                    android:clickable="true"
+                    android:focusable="true"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal"
+                    android:paddingHorizontal="16dp">
+
+                    <ImageView
+                        android:layout_width="32dp"
+                        android:layout_height="32dp"
+                        android:src="@drawable/baseline_healing_24" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="16dp"
+                        android:fontFamily="@font/poppins"
+                        android:text="SAMU"
+                        android:textColor="@color/black"
+                        android:textSize="20sp" />
+
+                </LinearLayout>
+
+                <!-- Polícia Civil -->
+
+                <LinearLayout
+                    android:id="@+id/buttonPoliciaCivil"
+                    android:layout_width="360dp"
+                    android:layout_height="80dp"
+                    android:layout_marginBottom="10dp"
+                    android:background="@drawable/bg_card_borda_rosa"
+                    android:clickable="true"
+                    android:focusable="true"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal"
+                    android:paddingHorizontal="16dp">
+
+                    <ImageView
+                        android:layout_width="32dp"
+                        android:layout_height="32dp"
+                        android:src="@drawable/baseline_local_police_24" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="16dp"
+                        android:fontFamily="@font/poppins"
+                        android:text="Polícia Civil"
+                        android:textColor="@color/black"
+                        android:textSize="20sp" />
+
+                </LinearLayout>
+
+                <!-- Defesa Civil -->
+
+                <LinearLayout
+                    android:id="@+id/buttonDefesaMulher"
+                    android:layout_width="360dp"
+                    android:layout_height="80dp"
+                    android:layout_marginBottom="10dp"
+                    android:background="@drawable/bg_card_borda_rosa"
+                    android:clickable="true"
+                    android:focusable="true"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal"
+                    android:paddingHorizontal="16dp">
+
+                    <ImageView
+                        android:layout_width="32dp"
+                        android:layout_height="32dp"
+                        android:src="@drawable/baseline_woman_24" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="16dp"
+                        android:fontFamily="@font/poppins"
+                        android:text="Defesa da Mulher"
+                        android:textColor="@color/black"
+                        android:textSize="20sp" />
+
+                </LinearLayout>
+
+                <!-- Defesa Civil -->
+
+                <LinearLayout
+                    android:id="@+id/buttonDefesaCivil"
+                    android:layout_width="360dp"
+                    android:layout_height="80dp"
+                    android:layout_marginBottom="10dp"
+                    android:background="@drawable/bg_card_borda_rosa"
+                    android:clickable="true"
+                    android:focusable="true"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal"
+                    android:paddingHorizontal="16dp">
+
+                    <ImageView
+                        android:layout_width="32dp"
+                        android:layout_height="32dp"
+                        android:src="@drawable/baseline_handshake_24" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="16dp"
+                        android:fontFamily="@font/poppins"
+                        android:text="Defesa Civil"
+                        android:textColor="@color/black"
+                        android:textSize="20sp" />
+
+                </LinearLayout>
 
             </LinearLayout>
 
-            <!-- Corpo de Bombeiros -->
-
-            <LinearLayout
-                android:id="@+id/buttonBombeiros"
-                android:layout_width="360dp"
-                android:layout_height="80dp"
-                android:layout_marginBottom="10dp"
-                android:background="@drawable/bg_card_borda_rosa"
-                android:orientation="horizontal"
-                android:gravity="center_vertical"
-                android:paddingHorizontal="16dp"
-                android:clickable="true"
-                android:focusable="true">
-
-                <ImageView
-                    android:layout_width="32dp"
-                    android:layout_height="32dp"
-                    android:src="@drawable/baseline_health_and_safety_24"/>
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="16dp"
-                    android:text="Corpo de Bombeiros"
-                    android:textColor="@color/black"
-                    android:textSize="20sp"
-                    android:fontFamily="@font/poppins" />
-
-            </LinearLayout>
-
-            <!-- SAMU -->
-
-            <LinearLayout
-                android:id="@+id/buttonSamu"
-                android:layout_width="360dp"
-                android:layout_height="80dp"
-                android:layout_marginBottom="10dp"
-                android:background="@drawable/bg_card_borda_rosa"
-                android:orientation="horizontal"
-                android:gravity="center_vertical"
-                android:paddingHorizontal="16dp"
-                android:clickable="true"
-                android:focusable="true">
-
-                <ImageView
-                    android:layout_width="32dp"
-                    android:layout_height="32dp"
-                    android:src="@drawable/baseline_healing_24"/>
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="16dp"
-                    android:text="SAMU"
-                    android:textColor="@color/black"
-                    android:textSize="20sp"
-                    android:fontFamily="@font/poppins" />
-
-            </LinearLayout>
-
-            <!-- Polícia Civil -->
-
-            <LinearLayout
-                android:id="@+id/buttonPoliciaCivil"
-                android:layout_width="360dp"
-                android:layout_height="80dp"
-                android:layout_marginBottom="10dp"
-                android:background="@drawable/bg_card_borda_rosa"
-                android:orientation="horizontal"
-                android:gravity="center_vertical"
-                android:paddingHorizontal="16dp"
-                android:clickable="true"
-                android:focusable="true">
-
-                <ImageView
-                    android:layout_width="32dp"
-                    android:layout_height="32dp"
-                    android:src="@drawable/baseline_local_police_24"/>
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="16dp"
-                    android:text="Polícia Civil"
-                    android:textColor="@color/black"
-                    android:textSize="20sp"
-                    android:fontFamily="@font/poppins" />
-
-            </LinearLayout>
-
-            <!-- Defesa Civil -->
-
-            <LinearLayout
-                android:id="@+id/buttonDefesaMulher"
-                android:layout_width="360dp"
-                android:layout_height="80dp"
-                android:layout_marginBottom="10dp"
-                android:background="@drawable/bg_card_borda_rosa"
-                android:orientation="horizontal"
-                android:gravity="center_vertical"
-                android:paddingHorizontal="16dp"
-                android:clickable="true"
-                android:focusable="true">
-
-                <ImageView
-                    android:layout_width="32dp"
-                    android:layout_height="32dp"
-                    android:src="@drawable/baseline_woman_24"/>
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="16dp"
-                    android:text="Defesa da Mulher"
-                    android:textColor="@color/black"
-                    android:textSize="20sp"
-                    android:fontFamily="@font/poppins" />
-
-            </LinearLayout>
-
-            <!-- Defesa Civil -->
-
-            <LinearLayout
-                android:id="@+id/buttonDefesaCivil"
-                android:layout_width="360dp"
-                android:layout_height="80dp"
-                android:layout_marginBottom="10dp"
-                android:background="@drawable/bg_card_borda_rosa"
-                android:orientation="horizontal"
-                android:gravity="center_vertical"
-                android:paddingHorizontal="16dp"
-                android:clickable="true"
-                android:focusable="true">
-
-                <ImageView
-                    android:layout_width="32dp"
-                    android:layout_height="32dp"
-                    android:src="@drawable/baseline_handshake_24"/>
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="16dp"
-                    android:text="Defesa Civil"
-                    android:textColor="@color/black"
-                    android:textSize="20sp"
-                    android:fontFamily="@font/poppins" />
-
-            </LinearLayout>
-
-        </LinearLayout>
-
-    </ScrollView>
+        </ScrollView>
 
         <TextView
             android:id="@+id/textViewServicosEmergencia"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
-            android:layout_marginEnd="140dp"
             android:fontFamily="@font/poppins_semibold"
-            android:text="Serviços de Emergência"
             android:textSize="20sp"
-            app:layout_constraintEnd_toStartOf="@+id/guidelineBordaDireita"
-            app:layout_constraintStart_toEndOf="@+id/imageViewContato"
-            app:layout_constraintTop_toTopOf="@+id/guidelineEmergencia" />
+            tools:layout_editor_absoluteX="8dp"
+            tools:layout_editor_absoluteY="376dp" />
+
 
         <ImageView
-            android:id="@+id/imageViewContato"
+            android:id="@+id/imageViewContato3"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="20dp"
-            app:layout_constraintStart_toStartOf="@+id/guidelineBordaEsquerda"
-            app:layout_constraintTop_toTopOf="@+id/guidelineEmergencia"
-            app:srcCompat="@drawable/baseline_call_24" />
-
-        <TextView
-            android:id="@+id/textViewToqueParaAdicionar"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="10dp"
-            android:fontFamily="@font/poppins"
-            android:text="Toque para acionar contatos de confiança"
-            android:textAlignment="center"
-            android:textSize="14sp"
-            app:layout_constraintBottom_toTopOf="@+id/guidelineEmergencia"
+            android:layout_marginStart="64dp"
+            android:layout_marginTop="6dp"
+            android:layout_marginEnd="4dp"
+            android:layout_marginBottom="13dp"
+            app:layout_constraintBottom_toTopOf="@+id/scrollViewContatosEmergencia"
+            app:layout_constraintEnd_toStartOf="@+id/textViewServicosEmergencia2"
+            app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/buttonEmergencia"
-            tools:layout_editor_absoluteX="74dp" />
+            app:srcCompat="@drawable/baseline_call_24" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
