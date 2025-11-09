@@ -2,6 +2,7 @@ package com.example.safetrace;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.toolbox.Volley;
@@ -17,11 +18,14 @@ import java.util.Map;
 
 public class APIService {
     private static APIService instance;
+    private static String BASE_API_URL;
     private RequestQueue requestQueue;
+
 
 
     private APIService(Context context) {
         requestQueue = Volley.newRequestQueue(context.getApplicationContext());
+        BASE_API_URL = BuildConfig.BASE_API_URL;
     }
 
     public static synchronized APIService getInstance(Context context) {
@@ -33,7 +37,7 @@ public class APIService {
 
     public void login(Context context, String email, String password,
                       final APIServiceCallback callback) {
-        String url = "http://177.44.248.32:80/api/v1/auth/login";
+        String url = BASE_API_URL + "auth/login";
         JSONObject params = new JSONObject();
         try {
             params.put("login", email);
@@ -124,7 +128,7 @@ public class APIService {
 
     public void register(Context context, String name, String email, String phone, String document, String password,
                          final APIServiceCallback callback) {
-        String url = "http://177.44.248.32:80/api/v1/auth/register";
+        String url = BASE_API_URL + "auth/register";
         JSONObject params = new JSONObject();
         try {
             params.put("name", name);
@@ -195,7 +199,7 @@ public class APIService {
     }
 
     public void logout(Context context, final APIServiceCallback callback) {
-        String url = "http://177.44.248.32:80/api/v1/auth/logout";
+        String url = BASE_API_URL + "auth/logout";
 
         SharedPreferences prefs = context.getSharedPreferences("safetrace_prefs", Context.MODE_PRIVATE);
         String token = prefs.getString("api_token", null);
@@ -240,7 +244,7 @@ public class APIService {
     }
 
     public void getContacts(Context context, boolean includeUser, final APIServiceCallback callback) {
-        String url = "http://177.44.248.32:80/api/v1/contact";
+        String url = BASE_API_URL + "contact";
         if (includeUser) {
             url += "?include=user";
         }
@@ -284,7 +288,7 @@ public class APIService {
     }
 
     public void getUserProfile(Context context, final APIServiceCallback callback) {
-        String url = "http://177.44.248.32:80/api/v1/auth/me";
+        String url = BASE_API_URL + "auth/user";
 
         SharedPreferences prefs = context.getSharedPreferences("safetrace_prefs", Context.MODE_PRIVATE);
         String token = prefs.getString("api_token", null);
@@ -297,40 +301,28 @@ public class APIService {
         JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(
                 Request.Method.GET, url, null,
                 response -> {
-                    // Salvar user_id e nome do usuário do perfil
                     try {
-                        String userId = null;
-                        String userName = null;
-                        
-                        if (response.has("id")) {
-                            userId = response.optString("id", null);
-                            userName = response.optString("name", null);
-                        } else if (response.has("user")) {
-                            JSONObject user = response.getJSONObject("user");
-                            userId = user.optString("id", null);
-                            userName = user.optString("name", null);
-                        } else if (response.has("data")) {
-                            JSONObject data = response.getJSONObject("data");
-                            userId = data.optString("id", null);
-                            userName = data.optString("name", null);
-                        }
-                        
+                        // Extract user data directly from the response
+                        String userId = response.has("id") ? String.valueOf(response.optInt("id")) : null;
+                        String userName = response.optString("name", null);
+
                         SharedPreferences prefs2 = context.getSharedPreferences("safetrace_prefs", Context.MODE_PRIVATE);
-                        android.content.SharedPreferences.Editor editor = prefs2.edit();
+                        SharedPreferences.Editor editor = prefs2.edit();
+
                         if (userId != null && !userId.isEmpty()) {
                             editor.putString("user_id", userId);
-                            android.util.Log.d("APIService", "User ID salvo: " + userId);
+                            android.util.Log.d("APIService", "User ID saved: " + userId);
                         }
                         if (userName != null && !userName.isEmpty()) {
                             editor.putString("user_name", userName);
-                            android.util.Log.d("APIService", "User name salvo: " + userName);
+                            android.util.Log.d("APIService", "User name saved: " + userName);
                         } else {
-                            android.util.Log.w("APIService", "Nome do usuário não encontrado na resposta");
+                            android.util.Log.w("APIService", "User name not found in response");
                         }
                         editor.apply();
-                    } catch (JSONException e) {
-                        android.util.Log.e("APIService", "Erro ao parsear resposta do perfil", e);
-                        // Ignorar erro de parsing
+                    } catch (Exception e) {
+                        android.util.Log.e("APIService", "Error parsing user profile response", e);
+                        // Ignore parsing error
                     }
                     callback.onSuccess(response);
                 },
@@ -359,21 +351,27 @@ public class APIService {
         requestQueue.add(jsonObjectRequest);
     }
 
-    public void addContactByCode(Context context, String code, final APIServiceCallback callback) {
-        String url = "http://177.44.248.32:80/api/v1/contact";
-        JSONObject params = new JSONObject();
-        try {
-            params.put("code", code);
-        } catch (JSONException e) {
-            callback.onError("JSON error");
-            return;
-        }
-
+    public void addContact(Context context, String code, final APIServiceCallback callback) {
+        String url = BASE_API_URL + "contact";
         SharedPreferences prefs = context.getSharedPreferences("safetrace_prefs", Context.MODE_PRIVATE);
         String token = prefs.getString("api_token", null);
+        String userId = prefs.getString("user_id", null);
 
         if (token == null || token.isEmpty()) {
             callback.onError("User not authenticated");
+            return;
+        }
+        if (userId == null || userId.isEmpty()) {
+            callback.onError("User ID not available. Please re-login.");
+            return;
+        }
+
+        JSONObject params = new JSONObject();
+        try {
+            params.put("ref_user", code);
+            params.put("ref_owner", userId);
+        } catch (JSONException e) {
+            callback.onError("JSON error");
             return;
         }
 

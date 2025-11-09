@@ -74,30 +74,26 @@ public class CadastroContatosActivity extends AppCompatActivity implements Navig
         // Carregar contatos da API
         loadContactsFromApi();
     }
-    
+
     private void setupQrCodeLauncher() {
         qrCodeLauncher = registerForActivityResult(
-            new ActivityResultContracts.StartActivityForResult(),
-            new ActivityResultCallback<ActivityResult>() {
-                @Override
-                public void onActivityResult(ActivityResult result) {
-                    if (result.getResultCode() == RESULT_OK && result.getData() != null) {
-                        String qrCodeText = result.getData().getStringExtra("qr_code_result");
-                        if (qrCodeText != null && !qrCodeText.isEmpty()) {
-                            // Processar o QR Code escaneado
-                            processQRCodeResult(qrCodeText);
+                new ActivityResultContracts.StartActivityForResult(),
+                new ActivityResultCallback<ActivityResult>() {
+                    @Override
+                    public void onActivityResult(ActivityResult result) {
+                        if (result.getResultCode() == RESULT_OK && result.getData() != null) {
+                            String qrCodeText = result.getData().getStringExtra("qr_code_result");
+                            if (qrCodeText != null && !qrCodeText.isEmpty()) {
+                                processQRCodeResult(qrCodeText);
+                            }
                         }
                     }
                 }
-            }
         );
     }
-    
+
     private void processQRCodeResult(String qrCodeText) {
-        // Adicionar o código escaneado ao campo de código e salvar automaticamente
-        editTextCodigo.setText(qrCodeText);
-        // Salvar automaticamente após escanear
-        saveContact();
+        saveContactApi( qrCodeText );
     }
     
     private void showQRCodeDialog() {
@@ -106,7 +102,7 @@ public class CadastroContatosActivity extends AppCompatActivity implements Navig
         String userId = prefs.getString("user_id", null);
         
         if (userId == null || userId.isEmpty()) {
-            // Se não tiver user_id, buscar do perfil do usuário
+
             APIService.getInstance(this).getUserProfile(this, new APIService.APIServiceCallback() {
                 @Override
                 public void onSuccess(JSONObject response) {
@@ -236,28 +232,26 @@ public class CadastroContatosActivity extends AppCompatActivity implements Navig
             return;
         }
 
-        // Remover espaços e caracteres especiais
         codigo = codigo.replaceAll("\\s+", "");
 
-        // Adicionar contato via API usando o código (user_id) do outro usuário
-        APIService.getInstance(this).addContactByCode(this, codigo, new APIService.APIServiceCallback() {
+        saveContactApi( codigo );
+    }
+
+    private void saveContactApi( String code )
+    {
+        APIService.getInstance(this).addContact(this, code, new APIService.APIServiceCallback() {
             @Override
             public void onSuccess(JSONObject response) {
                 Toast.makeText(CadastroContatosActivity.this, "Contato adicionado com sucesso!", Toast.LENGTH_SHORT).show();
                 editTextCodigo.setText("");
-                // Recarregar lista de contatos da API
-                loadContactsFromApi();
-                // Manter o foco no campo de código para facilitar cadastro de mais contatos
-                editTextCodigo.requestFocus();
+                loadContactsFromApi(); // Refresh the contact list
             }
-
             @Override
             public void onError(String error) {
                 Toast.makeText(CadastroContatosActivity.this, "Erro ao adicionar contato: " + error, Toast.LENGTH_SHORT).show();
             }
         });
     }
-
 
     private void loadContactsFromApi() {
         if (layoutContatos == null || scrollViewContatos == null) return;
