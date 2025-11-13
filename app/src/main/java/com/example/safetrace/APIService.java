@@ -27,8 +27,7 @@ public class APIService {
 
     private APIService(Context context) {
         requestQueue = Volley.newRequestQueue(context.getApplicationContext());
-        //BASE_API_URL = BuildConfig.BASE_API_URL;
-        BASE_API_URL = "http://10.0.2.2:8000/api/v1/";
+        BASE_API_URL = BuildConfig.BASE_API_URL;
     }
 
     public static synchronized APIService getInstance(Context context) {
