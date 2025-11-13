@@ -2,6 +2,7 @@ package com.example.safetrace;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.util.Log;
 
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
@@ -14,6 +15,7 @@ import org.json.JSONObject;
 import org.json.JSONException;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 
 public class APIService {
@@ -25,7 +27,8 @@ public class APIService {
 
     private APIService(Context context) {
         requestQueue = Volley.newRequestQueue(context.getApplicationContext());
-        BASE_API_URL = BuildConfig.BASE_API_URL;
+        //BASE_API_URL = BuildConfig.BASE_API_URL;
+        BASE_API_URL = "http://10.0.2.2:8000/api/v1/";
     }
 
     public static synchronized APIService getInstance(Context context) {
@@ -394,6 +397,160 @@ public class APIService {
                     callback.onError(message);
                 }
         ) {
+            @Override
+            public Map<String, String> getHeaders() throws AuthFailureError {
+                Map<String, String> headers = new HashMap<>();
+                headers.put("Authorization", "Bearer " + token);
+                headers.put("Content-Type", "application/json");
+                return headers;
+            }
+        };
+
+        requestQueue.add(jsonObjectRequest);
+    }
+
+    public void createAlert(Context context, String userId, String name, List<String> contactIds, final APIServiceCallback callback) {
+        String url = BASE_API_URL + "alert";
+        JSONObject params = new JSONObject();
+        try {
+            System.out.println(userId);
+            params.put("ref_user", Integer.parseInt(userId));  // parse userId to number if needed
+            if (name != null && !name.isEmpty()) {
+                params.put("name", name);
+            }
+            JSONArray contactsArray = new JSONArray();
+            for (String contactId : contactIds) {
+                try {
+                    contactsArray.put(Integer.parseInt(contactId));  // parse each contact to integer
+                } catch (NumberFormatException e) {
+                    // Log invalid format, skip or handle as needed
+                }
+            }
+            params.put("contacts", contactsArray);
+
+        } catch (JSONException e) {
+            callback.onError("JSON error building alert creation payload");
+            return;
+        }
+
+        SharedPreferences prefs = context.getSharedPreferences("safetrace_prefs", Context.MODE_PRIVATE);
+        String token = prefs.getString("api_token", null);
+
+        if (token == null || token.isEmpty()) {
+            callback.onError("User not authenticated");
+            return;
+        }
+
+        JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.POST, url, params,
+                response -> callback.onSuccess(response) ,
+                error -> {
+                    String message = "Failed to create alert";
+                    if (error.networkResponse != null && error.networkResponse.data != null) {
+                        try {
+                            String responseBody = new String(error.networkResponse.data, "utf-8");
+                            JSONObject data = new JSONObject(responseBody);
+                            message = data.optString("error", message);
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
+                    }
+                    System.out.println(message);
+                    callback.onError(message);
+                }) {
+            @Override
+            public Map<String, String> getHeaders() {
+                Map<String, String> headers = new HashMap<>();
+                headers.put("Authorization", "Bearer " + token);
+                headers.put("Content-Type", "application/json");
+                return headers;
+            }
+        };
+
+        requestQueue.add(jsonObjectRequest);
+    }
+
+    public void addLocation(Context context, String alertId, double latitude, double longitude, final APIServiceCallback callback) {
+        String url = BASE_API_URL + "location";
+        JSONObject params = new JSONObject();
+        try {
+            params.put("ref_alert", alertId);
+            params.put("latitude", latitude);
+            params.put("longitude", longitude);
+        } catch (JSONException e) {
+            callback.onError("JSON error building location payload");
+            return;
+        }
+
+        SharedPreferences prefs = context.getSharedPreferences("safetrace_prefs", Context.MODE_PRIVATE);
+        String token = prefs.getString("api_token", null);
+
+        if (token == null || token.isEmpty()) {
+            callback.onError("User not authenticated");
+            return;
+        }
+
+        JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.POST, url, params,
+                response -> callback.onSuccess(response),
+                error -> {
+                    String message = "Failed to add location";
+                    if (error.networkResponse != null && error.networkResponse.data != null) {
+                        try {
+                            String responseBody = new String(error.networkResponse.data, "utf-8");
+                            JSONObject data = new JSONObject(responseBody);
+                            message = data.optString("error", message);
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
+                    }
+                    callback.onError(message);
+                }) {
+            @Override
+            public Map<String, String> getHeaders() throws AuthFailureError {
+                Map<String, String> headers = new HashMap<>();
+                headers.put("Authorization", "Bearer " + token);
+                headers.put("Content-Type", "application/json");
+                return headers;
+            }
+        };
+
+        requestQueue.add(jsonObjectRequest);
+    }
+
+    public void addRecording(Context context, String alertId, String filePath, int duration, final APIServiceCallback callback) {
+        String url = BASE_API_URL + "recording";
+        JSONObject params = new JSONObject();
+        try {
+            params.put("ref_alert", alertId);
+            params.put("file_path", filePath);
+            params.put("duration", duration);
+        } catch (JSONException e) {
+            callback.onError("JSON error building recording payload");
+            return;
+        }
+
+        SharedPreferences prefs = context.getSharedPreferences("safetrace_prefs", Context.MODE_PRIVATE);
+        String token = prefs.getString("api_token", null);
+
+        if (token == null || token.isEmpty()) {
+            callback.onError("User not authenticated");
+            return;
+        }
+
+        JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.POST, url, params,
+                response -> callback.onSuccess(response),
+                error -> {
+                    String message = "Failed to add recording";
+                    if (error.networkResponse != null && error.networkResponse.data != null) {
+                        try {
+                            String responseBody = new String(error.networkResponse.data, "utf-8");
+                            JSONObject data = new JSONObject(responseBody);
+                            message = data.optString("error", message);
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
+                    }
+                    callback.onError(message);
+                }) {
             @Override
             public Map<String, String> getHeaders() throws AuthFailureError {
                 Map<String, String> headers = new HashMap<>();
