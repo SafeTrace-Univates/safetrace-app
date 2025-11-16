@@ -41,7 +41,7 @@ public class EmergenciaService {
         return instance;
     }
     
-    public void iniciarEmergencia(String usuarioId, String usuarioNome, List<String> contatosIds, List<String> contatosNomes) {
+    public void iniciarEmergencia(String usuarioId, String usuarioNome, List<String> contatosIds, List<String> contatosNomes, String alertId) {
         try {
             Log.d(TAG, "iniciarEmergencia chamado");
             
@@ -52,6 +52,7 @@ public class EmergenciaService {
             
             emergenciaAtual = new Emergencia();
             emergenciaAtual.setId(UUID.randomUUID().toString());
+            emergenciaAtual.setAlertId(alertId); // ID do alert criado na API
             emergenciaAtual.setDataInicio(new Date());
             emergenciaAtual.setUsuarioId(usuarioId);
             emergenciaAtual.setUsuarioNome(usuarioNome);
@@ -90,6 +91,47 @@ public class EmergenciaService {
         // Parar gravação de áudio
         pararGravacaoAudio();
         
+        // Tentar enviar gravação à API se houver conexão, senão adicionar à fila pendente
+        String alertId = emergenciaAtual.getAlertId();
+        String caminhoAudio = emergenciaAtual.getCaminhoAudio();
+        if (alertId != null && !alertId.isEmpty() && caminhoAudio != null && !caminhoAudio.isEmpty()) {
+            com.example.safetrace.util.NetworkUtils networkUtils = new com.example.safetrace.util.NetworkUtils();
+            if (com.example.safetrace.util.NetworkUtils.isNetworkAvailable(context)) {
+                // Tentar enviar imediatamente
+                com.example.safetrace.APIService.getInstance(context).addRecording(
+                    context,
+                    alertId,
+                    caminhoAudio,
+                    0, // duration não está no ER model
+                    new com.example.safetrace.APIService.APIServiceCallback() {
+                        @Override
+                        public void onSuccess(org.json.JSONObject response) {
+                            Log.d(TAG, "Gravação enviada à API com sucesso");
+                        }
+                        
+                        @Override
+                        public void onError(String error) {
+                            Log.w(TAG, "Erro ao enviar gravação à API, adicionando à fila pendente: " + error);
+                            // Adicionar à fila pendente
+                            com.example.safetrace.util.PendingDataQueue queue = new com.example.safetrace.util.PendingDataQueue(context);
+                            queue.addPendingRecording(alertId, caminhoAudio);
+                        }
+                    }
+                );
+            } else {
+                // Sem conexão - adicionar à fila pendente
+                Log.d(TAG, "Sem conexão. Gravação será enviada quando houver internet.");
+                com.example.safetrace.util.PendingDataQueue queue = new com.example.safetrace.util.PendingDataQueue(context);
+                queue.addPendingRecording(alertId, caminhoAudio);
+            }
+        } else if (caminhoAudio != null && !caminhoAudio.isEmpty()) {
+            // Sem alertId ainda - será enviado depois quando o alert for criado
+            Log.d(TAG, "Alert ainda não criado. Gravação será enviada depois.");
+            com.example.safetrace.util.PendingDataQueue queue = new com.example.safetrace.util.PendingDataQueue(context);
+            String finalAlertId = alertId != null ? alertId : "";
+            queue.addPendingRecording(finalAlertId, caminhoAudio);
+        }
+        
         // Salvar emergência
         salvarEmergencia();
         
@@ -103,6 +145,43 @@ public class EmergenciaService {
             Localizacao localizacao = new Localizacao(latitude, longitude, precisao);
             emergenciaAtual.adicionarLocalizacao(localizacao);
             Log.d(TAG, "Localização adicionada: " + latitude + ", " + longitude);
+            
+            // Tentar enviar à API se houver conexão, senão adicionar à fila pendente
+            String alertId = emergenciaAtual.getAlertId();
+            if (alertId != null && !alertId.isEmpty()) {
+                com.example.safetrace.util.NetworkUtils networkUtils = new com.example.safetrace.util.NetworkUtils();
+                if (com.example.safetrace.util.NetworkUtils.isNetworkAvailable(context)) {
+                    // Tentar enviar imediatamente
+                    com.example.safetrace.APIService.getInstance(context).addLocation(
+                        context,
+                        alertId,
+                        latitude,
+                        longitude,
+                        new com.example.safetrace.APIService.APIServiceCallback() {
+                            @Override
+                            public void onSuccess(org.json.JSONObject response) {
+                                Log.d(TAG, "Localização enviada à API com sucesso");
+                            }
+                            
+                            @Override
+                            public void onError(String error) {
+                                Log.w(TAG, "Erro ao enviar localização à API, adicionando à fila pendente: " + error);
+                                // Adicionar à fila pendente
+                                com.example.safetrace.util.PendingDataQueue queue = new com.example.safetrace.util.PendingDataQueue(context);
+                                queue.addPendingLocation(alertId, String.valueOf(latitude), String.valueOf(longitude));
+                            }
+                        }
+                    );
+                } else {
+                    // Sem conexão - adicionar à fila pendente
+                    Log.d(TAG, "Sem conexão. Localização será enviada quando houver internet.");
+                    com.example.safetrace.util.PendingDataQueue queue = new com.example.safetrace.util.PendingDataQueue(context);
+                    queue.addPendingLocation(alertId, String.valueOf(latitude), String.valueOf(longitude));
+                }
+            } else {
+                // Sem alertId ainda - será enviado depois quando o alert for criado
+                Log.d(TAG, "Alert ainda não criado. Localização será enviada depois.");
+            }
         }
     }
     
@@ -212,14 +291,48 @@ public class EmergenciaService {
             org.json.JSONArray emergenciasArray = new org.json.JSONArray(emergenciasJson);
             org.json.JSONObject emergenciaJson = new org.json.JSONObject();
             
+            // Dados da emergência local
             emergenciaJson.put("id", emergenciaAtual.getId());
             emergenciaJson.put("dataInicio", emergenciaAtual.getDataInicio().getTime());
             emergenciaJson.put("dataFim", emergenciaAtual.getDataFim() != null ? emergenciaAtual.getDataFim().getTime() : 0);
             emergenciaJson.put("usuarioId", emergenciaAtual.getUsuarioId());
             emergenciaJson.put("usuarioNome", emergenciaAtual.getUsuarioNome());
+            
+            // ALERT conforme ER model: id, ref_user, created_at
+            org.json.JSONObject alertJson = new org.json.JSONObject();
+            alertJson.put("id", emergenciaAtual.getAlertId() != null ? emergenciaAtual.getAlertId() : "");
+            alertJson.put("ref_user", emergenciaAtual.getUsuarioId());
+            alertJson.put("created_at", emergenciaAtual.getDataInicio().getTime());
+            emergenciaJson.put("alert", alertJson);
+            
+            // LOCATIONS conforme ER model: id, ref_alert, latitude, longitude, created_at
+            org.json.JSONArray locationsArray = new org.json.JSONArray();
+            for (int i = 0; i < emergenciaAtual.getLocalizacoes().size(); i++) {
+                Localizacao loc = emergenciaAtual.getLocalizacoes().get(i);
+                org.json.JSONObject locJson = new org.json.JSONObject();
+                locJson.put("id", emergenciaAtual.getId() + "_loc_" + i); // ID temporário local
+                locJson.put("ref_alert", emergenciaAtual.getAlertId() != null ? emergenciaAtual.getAlertId() : "");
+                locJson.put("latitude", String.valueOf(loc.getLatitude())); // ER model usa text
+                locJson.put("longitude", String.valueOf(loc.getLongitude())); // ER model usa text
+                locJson.put("created_at", loc.getTimestamp().getTime());
+                locationsArray.put(locJson);
+            }
+            emergenciaJson.put("locations", locationsArray);
+            
+            // RECORDING conforme ER model: id, ref_alert, file_path, created_at
+            if (emergenciaAtual.getCaminhoAudio() != null && !emergenciaAtual.getCaminhoAudio().isEmpty()) {
+                org.json.JSONObject recordingJson = new org.json.JSONObject();
+                recordingJson.put("id", emergenciaAtual.getId() + "_rec"); // ID temporário local
+                recordingJson.put("ref_alert", emergenciaAtual.getAlertId() != null ? emergenciaAtual.getAlertId() : "");
+                recordingJson.put("file_path", emergenciaAtual.getCaminhoAudio());
+                recordingJson.put("created_at", emergenciaAtual.getDataInicio().getTime());
+                emergenciaJson.put("recording", recordingJson);
+            }
+            
+            // Dados auxiliares para compatibilidade (não fazem parte do ER model)
             emergenciaJson.put("caminhoAudio", emergenciaAtual.getCaminhoAudio() != null ? emergenciaAtual.getCaminhoAudio() : "");
             
-            // Salvar notificados
+            // Salvar notificados (para exibição, não faz parte do ER model)
             org.json.JSONArray notificadosIdsArray = new org.json.JSONArray();
             for (String id : emergenciaAtual.getNotificadosIds()) {
                 notificadosIdsArray.put(id);
@@ -232,7 +345,7 @@ public class EmergenciaService {
             }
             emergenciaJson.put("notificadosNomes", notificadosNomesArray);
             
-            // Salvar localizações
+            // Localizações antigas (para compatibilidade, usar locations acima)
             org.json.JSONArray localizacoesArray = new org.json.JSONArray();
             for (Localizacao loc : emergenciaAtual.getLocalizacoes()) {
                 org.json.JSONObject locJson = new org.json.JSONObject();
@@ -247,7 +360,7 @@ public class EmergenciaService {
             emergenciasArray.put(emergenciaJson);
             
             prefs.edit().putString("emergencias", emergenciasArray.toString()).apply();
-            Log.d(TAG, "Emergência salva: " + emergenciaAtual.getId());
+            Log.d(TAG, "Emergência salva conforme ER model: " + emergenciaAtual.getId());
         } catch (org.json.JSONException e) {
             Log.e(TAG, "Erro ao salvar emergência", e);
         }
@@ -265,50 +378,111 @@ public class EmergenciaService {
                 
                 Emergencia emergencia = new Emergencia();
                 emergencia.setId(emergenciaJson.getString("id"));
-                emergencia.setDataInicio(new java.util.Date(emergenciaJson.getLong("dataInicio")));
+                
+                // Carregar alertId e hora de criação do alert (nova estrutura ER model)
+                Date horaInicioAlerta = null;
+                if (emergenciaJson.has("alert")) {
+                    org.json.JSONObject alertJson = emergenciaJson.getJSONObject("alert");
+                    emergencia.setAlertId(alertJson.optString("id", ""));
+                    // Extrair created_at do alert como hora inicial
+                    long alertCreatedAt = alertJson.optLong("created_at", 0);
+                    if (alertCreatedAt > 0) {
+                        horaInicioAlerta = new java.util.Date(alertCreatedAt);
+                    }
+                } else {
+                    // Compatibilidade com estrutura antiga
+                    emergencia.setAlertId(emergenciaJson.optString("alertId", ""));
+                }
+                
+                // Usar hora do alert como dataInicio, ou fallback para dataInicio antiga
+                if (horaInicioAlerta != null) {
+                    emergencia.setDataInicio(horaInicioAlerta);
+                } else {
+                    emergencia.setDataInicio(new java.util.Date(emergenciaJson.getLong("dataInicio")));
+                }
+                
+                // dataFim será calculado a partir da última localização, não mais usado diretamente
+                // Manter para compatibilidade
                 long dataFim = emergenciaJson.optLong("dataFim", 0);
                 if (dataFim > 0) {
                     emergencia.setDataFim(new java.util.Date(dataFim));
                 }
                 emergencia.setUsuarioId(emergenciaJson.getString("usuarioId"));
                 emergencia.setUsuarioNome(emergenciaJson.getString("usuarioNome"));
-                emergencia.setCaminhoAudio(emergenciaJson.optString("caminhoAudio", ""));
                 
-                // Carregar notificados
-                org.json.JSONArray notificadosIdsArray = emergenciaJson.getJSONArray("notificadosIds");
+                // Carregar caminho do áudio (pode estar em recording ou caminhoAudio)
+                if (emergenciaJson.has("recording")) {
+                    org.json.JSONObject recordingJson = emergenciaJson.getJSONObject("recording");
+                    emergencia.setCaminhoAudio(recordingJson.optString("file_path", ""));
+                } else {
+                    emergencia.setCaminhoAudio(emergenciaJson.optString("caminhoAudio", ""));
+                }
+                
+                // Carregar notificados (campos auxiliares, não fazem parte do ER model)
                 java.util.List<String> notificadosIds = new java.util.ArrayList<>();
-                for (int j = 0; j < notificadosIdsArray.length(); j++) {
-                    notificadosIds.add(notificadosIdsArray.getString(j));
+                java.util.List<String> notificadosNomes = new java.util.ArrayList<>();
+                if (emergenciaJson.has("notificadosIds")) {
+                    try {
+                        org.json.JSONArray notificadosIdsArray = emergenciaJson.getJSONArray("notificadosIds");
+                        for (int j = 0; j < notificadosIdsArray.length(); j++) {
+                            notificadosIds.add(notificadosIdsArray.getString(j));
+                        }
+                    } catch (org.json.JSONException e) {
+                        Log.w(TAG, "Erro ao carregar notificadosIds", e);
+                    }
                 }
                 emergencia.setNotificadosIds(notificadosIds);
                 
-                org.json.JSONArray notificadosNomesArray = emergenciaJson.getJSONArray("notificadosNomes");
-                java.util.List<String> notificadosNomes = new java.util.ArrayList<>();
-                for (int j = 0; j < notificadosNomesArray.length(); j++) {
-                    notificadosNomes.add(notificadosNomesArray.getString(j));
+                if (emergenciaJson.has("notificadosNomes")) {
+                    try {
+                        org.json.JSONArray notificadosNomesArray = emergenciaJson.getJSONArray("notificadosNomes");
+                        for (int j = 0; j < notificadosNomesArray.length(); j++) {
+                            notificadosNomes.add(notificadosNomesArray.getString(j));
+                        }
+                    } catch (org.json.JSONException e) {
+                        Log.w(TAG, "Erro ao carregar notificadosNomes", e);
+                    }
                 }
                 emergencia.setNotificadosNomes(notificadosNomes);
                 
-                // Carregar localizações
+                // Carregar localizações (nova estrutura ER model - locations)
                 java.util.List<Localizacao> localizacoes = new java.util.ArrayList<>();
-                if (emergenciaJson.has("localizacoes")) {
+                if (emergenciaJson.has("locations")) {
+                    try {
+                        org.json.JSONArray locationsArray = emergenciaJson.getJSONArray("locations");
+                        Log.d(TAG, "Carregando " + locationsArray.length() + " localizações (ER model) para emergência " + emergencia.getId());
+                        for (int j = 0; j < locationsArray.length(); j++) {
+                            org.json.JSONObject locJson = locationsArray.getJSONObject(j);
+                            Localizacao loc = new Localizacao();
+                            // ER model usa text para latitude/longitude
+                            loc.setLatitude(Double.parseDouble(locJson.optString("latitude", "0")));
+                            loc.setLongitude(Double.parseDouble(locJson.optString("longitude", "0")));
+                            loc.setTimestamp(new java.util.Date(locJson.getLong("created_at")));
+                            loc.setPrecisao(0f); // Precisão não está no ER model
+                            localizacoes.add(loc);
+                        }
+                    } catch (org.json.JSONException e) {
+                        Log.e(TAG, "Erro ao carregar localizações (ER model) para emergência " + emergencia.getId(), e);
+                    }
+                } else if (emergenciaJson.has("localizacoes")) {
+                    // Compatibilidade com estrutura antiga
                     try {
                         org.json.JSONArray localizacoesArray = emergenciaJson.getJSONArray("localizacoes");
-                        Log.d(TAG, "Carregando " + localizacoesArray.length() + " localizações para emergência " + emergencia.getId());
+                        Log.d(TAG, "Carregando " + localizacoesArray.length() + " localizações (antiga) para emergência " + emergencia.getId());
                         for (int j = 0; j < localizacoesArray.length(); j++) {
                             org.json.JSONObject locJson = localizacoesArray.getJSONObject(j);
                             Localizacao loc = new Localizacao();
                             loc.setLatitude(locJson.getDouble("latitude"));
                             loc.setLongitude(locJson.getDouble("longitude"));
                             loc.setTimestamp(new java.util.Date(locJson.getLong("timestamp")));
-                            loc.setPrecisao((float) locJson.getDouble("precisao"));
+                            loc.setPrecisao((float) locJson.optDouble("precisao", 0));
                             localizacoes.add(loc);
                         }
                     } catch (org.json.JSONException e) {
-                        Log.e(TAG, "Erro ao carregar localizações para emergência " + emergencia.getId(), e);
+                        Log.e(TAG, "Erro ao carregar localizações (antiga) para emergência " + emergencia.getId(), e);
                     }
                 } else {
-                    Log.w(TAG, "Emergência " + emergencia.getId() + " não tem campo 'localizacoes'");
+                    Log.w(TAG, "Emergência " + emergencia.getId() + " não tem campo 'locations' ou 'localizacoes'");
                 }
                 emergencia.setLocalizacoes(localizacoes);
                 

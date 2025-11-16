@@ -4,6 +4,7 @@
 
     <!-- Permissões necessárias para o app -->
     <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.CAMERA" />
     <uses-permission android:name="android.permission.RECORD_AUDIO" />
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
@@ -73,6 +74,12 @@
             android:name=".TrajetoActivity"
             android:exported="false"
             android:screenOrientation="portrait" />
+
+        <!-- PerfilActivity - Tela para editar dados do usuário -->
+        <activity
+            android:name=".PerfilActivity"
+            android:exported="false"
+            android:screenOrientation="portrait" />
         
         <!-- EmergenciaForegroundService - Serviço em foreground para gravação de áudio e localização -->
         <service
@@ -80,6 +87,42 @@
             android:enabled="true"
             android:exported="false"
             android:foregroundServiceType="microphone|location" />
+
+        <!-- App Widget Provider -->
+        <receiver
+            android:name=".widget.EmergencyWidgetProvider"
+            android:exported="false">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+                <action android:name="com.example.safetrace.ACTION_WIDGET_EMERGENCY" />
+            </intent-filter>
+            <meta-data
+                android:name="android.appwidget.provider"
+                android:resource="@xml/emergency_widget_info" />
+        </receiver>
+        
+        <!-- NetworkChangeReceiver - Detecta mudanças na conectividade de rede -->
+        <!-- Para Android 7.0+ (API 24+), o BroadcastReceiver não funciona mais para CONNECTIVITY_ACTION -->
+        <!-- O processamento da fila será feito quando o app iniciar ou voltar ao foreground -->
+        <receiver
+            android:name=".receiver.NetworkChangeReceiver"
+            android:enabled="true"
+            android:exported="false">
+            <intent-filter>
+                <action android:name="android.net.conn.CONNECTIVITY_ACTION" />
+            </intent-filter>
+        </receiver>
+
+        <!-- FileProvider para compartilhar arquivos (áudios) -->
+        <provider
+            android:name="androidx.core.content.FileProvider"
+            android:authorities="${applicationId}.fileprovider"
+            android:exported="false"
+            android:grantUriPermissions="true">
+            <meta-data
+                android:name="android.support.FILE_PROVIDER_PATHS"
+                android:resource="@xml/file_paths" />
+        </provider>
 
         <!-- Google Maps API Key -->
         <meta-data

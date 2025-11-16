@@ -13,6 +13,10 @@
             android:icon="@drawable/baseline_contacts_24"
             android:title="Contatos de Confiança" />
         <item
+            android:id="@+id/nav_perfil"
+            android:icon="@drawable/baseline_person_24"
+            android:title="Meu Perfil" />
+        <item
             android:id="@+id/nav_historico"
             android:icon="@drawable/baseline_calendar_month_24"
             android:title="Histórico" />

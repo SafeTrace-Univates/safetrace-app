@@ -18,11 +18,13 @@ import com.google.android.gms.location.Priority;
 
 public class LocationService {
     private static final String TAG = "LocationService";
+    private static final float PRECISAO_MINIMA_METROS = 25.0f; // Filtrar localizações com precisão pior que 25 metros
     private static LocationService instance;
     private FusedLocationProviderClient fusedLocationClient;
     private LocationCallback locationCallback;
     private boolean isTracking = false;
     private Context context;
+    private Location ultimaLocalizacaoValida; // Armazenar a melhor localização disponível
     
     private LocationService(Context context) {
         this.context = context.getApplicationContext();
@@ -61,26 +63,41 @@ public class LocationService {
                 return;
             }
             
-            LocationRequest locationRequest = new LocationRequest.Builder(Priority.PRIORITY_HIGH_ACCURACY, 5000)
-                    .setWaitForAccurateLocation(false)
-                    .setMinUpdateIntervalMillis(3000)
-                    .setMaxUpdateDelayMillis(5000)
+            // Configuração otimizada para máxima precisão:
+            // - PRIORITY_HIGH_ACCURACY: Usa GPS para máxima precisão
+            // - setWaitForAccurateLocation(true): Espera por localização precisa antes de enviar
+            // - setMinUpdateIntervalMillis(2000): Atualiza no mínimo a cada 2 segundos
+            // - setMaxUpdateDelayMillis(3500): Máximo de 3,5 segundos de atraso
+            LocationRequest locationRequest = new LocationRequest.Builder(Priority.PRIORITY_HIGH_ACCURACY, 3500)
+                    .setWaitForAccurateLocation(true) // Esperar por localização precisa
+                    .setMinUpdateIntervalMillis(2000) // Atualizar no mínimo a cada 2 segundos
+                    .setMaxUpdateDelayMillis(3500) // Máximo de 3,5 segundos de atraso
                     .build();
             
             locationCallback = new LocationCallback() {
                 @Override
                 public void onLocationResult(LocationResult locationResult) {
-                    if (locationResult != null) {
+                    if (locationResult != null && locationResult.getLastLocation() != null) {
                         Location location = locationResult.getLastLocation();
-                        if (location != null) {
-                            float precisao = location.getAccuracy();
-                            EmergenciaService emergenciaService = EmergenciaService.getInstance(context);
-                            emergenciaService.adicionarLocalizacao(
-                                location.getLatitude(),
-                                location.getLongitude(),
-                                precisao
-                            );
-                            Log.d(TAG, "Localização atualizada: " + location.getLatitude() + ", " + location.getLongitude());
+                        float precisao = location.getAccuracy();
+                        
+                        // Verificar se a localização tem precisão válida
+                        if (precisao <= 0) {
+                            // Se não tem informação de precisão, considerar válida
+                            processarLocalizacao(location);
+                        } else if (precisao <= PRECISAO_MINIMA_METROS) {
+                            // Localização com boa precisão (≤ 25 metros)
+                            processarLocalizacao(location);
+                            Log.d(TAG, "Localização precisa aceita: " + location.getLatitude() + ", " + location.getLongitude() + " (precisão: " + precisao + "m)");
+                        } else {
+                            // Localização com baixa precisão (> 25 metros)
+                            Log.w(TAG, "Localização rejeitada por baixa precisão: " + precisao + "m (máximo: " + PRECISAO_MINIMA_METROS + "m)");
+                            
+                            // Se não temos uma localização válida ainda, usar a melhor disponível
+                            if (ultimaLocalizacaoValida == null || location.getAccuracy() < ultimaLocalizacaoValida.getAccuracy()) {
+                                Log.d(TAG, "Usando melhor localização disponível mesmo com precisão reduzida: " + location.getAccuracy() + "m");
+                                processarLocalizacao(location);
+                            }
                         }
                     }
                 }
@@ -99,6 +116,41 @@ public class LocationService {
         }
     }
     
+    /**
+     * Processa uma localização válida:
+     * - Compara com a última localização válida e mantém a melhor (menor precisão = melhor)
+     * - Adiciona ao EmergenciaService
+     */
+    private void processarLocalizacao(Location location) {
+        // Se temos uma localização válida anterior, comparar e manter a melhor
+        if (ultimaLocalizacaoValida != null) {
+            // Se a nova localização tem melhor precisão (menor valor = melhor), usar ela
+            if (location.getAccuracy() > 0 && location.getAccuracy() < ultimaLocalizacaoValida.getAccuracy()) {
+                ultimaLocalizacaoValida = location;
+                Log.d(TAG, "Nova melhor localização encontrada: precisão " + location.getAccuracy() + "m");
+            } else if (ultimaLocalizacaoValida.getAccuracy() <= 0 || location.getAccuracy() <= ultimaLocalizacaoValida.getAccuracy()) {
+                // Nova localização é melhor ou igual, atualizar
+                ultimaLocalizacaoValida = location;
+            } else {
+                // Usar a localização anterior que era melhor
+                location = ultimaLocalizacaoValida;
+                Log.d(TAG, "Usando localização anterior melhor (precisão: " + ultimaLocalizacaoValida.getAccuracy() + "m)");
+            }
+        } else {
+            // Primeira localização válida
+            ultimaLocalizacaoValida = location;
+        }
+        
+        float precisao = location.getAccuracy();
+        EmergenciaService emergenciaService = EmergenciaService.getInstance(context);
+        emergenciaService.adicionarLocalizacao(
+            location.getLatitude(),
+            location.getLongitude(),
+            precisao
+        );
+        Log.d(TAG, "Localização adicionada: " + location.getLatitude() + ", " + location.getLongitude() + " (precisão: " + precisao + "m)");
+    }
+    
     public void pararRastreamento() {
         if (!isTracking || locationCallback == null) {
             return;
@@ -107,6 +159,7 @@ public class LocationService {
         fusedLocationClient.removeLocationUpdates(locationCallback);
         locationCallback = null;
         isTracking = false;
+        ultimaLocalizacaoValida = null; // Limpar última localização ao parar
         Log.d(TAG, "Rastreamento de localização parado");
     }
     

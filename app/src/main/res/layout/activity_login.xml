@@ -212,7 +212,7 @@
         android:textAlignment="center"
         android:textColor="@color/primaria"
         android:textSize="16sp"
-        app:layout_constraintBottom_toTopOf="@+id/textViewEsqueciSenha"
+        app:layout_constraintBottom_toTopOf="@+id/buttonLogin"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@+id/textViewNaoConta"
         app:layout_constraintTop_toBottomOf="@+id/buttonBordaSenha" />
@@ -229,25 +229,12 @@
         android:text="Não tem uma conta?"
         android:textColor="@color/primaria_variacao"
         android:textSize="16sp"
-        app:layout_constraintBottom_toTopOf="@+id/textViewEsqueciSenha"
+        app:layout_constraintBottom_toTopOf="@+id/buttonLogin"
         app:layout_constraintEnd_toStartOf="@+id/textViewCadastro"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/buttonBordaSenha" />
 
-    <TextView
-        android:id="@+id/textViewEsqueciSenha"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="60dp"
-        android:layout_marginBottom="8dp"
-        android:fontFamily="@font/poppins"
-        android:text="Esqueci minha senha"
-        android:textColor="@color/primaria_variacao"
-        android:textSize="16sp"
-        app:layout_constraintBottom_toTopOf="@+id/buttonLogin"
-        app:layout_constraintEnd_toStartOf="@+id/guidelineBordaDireita"
-        app:layout_constraintStart_toStartOf="@+id/guidelineBordaEsquerda"
-        app:layout_constraintTop_toBottomOf="@+id/buttonBordaSenha" />
+    <!-- Removido: Esqueci minha senha -->
 
     <TextView
         android:id="@+id/textViewSuaSegurança"

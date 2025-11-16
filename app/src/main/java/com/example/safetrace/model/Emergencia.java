@@ -6,6 +6,7 @@ import java.util.List;
 
 public class Emergencia {
     private String id;
+    private String alertId; // ID do alert na API (ref_user na tabela alert)
     private Date dataInicio;
     private Date dataFim;
     private String usuarioId;
@@ -29,6 +30,14 @@ public class Emergencia {
     
     public void setId(String id) {
         this.id = id;
+    }
+    
+    public String getAlertId() {
+        return alertId;
+    }
+    
+    public void setAlertId(String alertId) {
+        this.alertId = alertId;
     }
     
     public Date getDataInicio() {
@@ -105,6 +114,55 @@ public class Emergencia {
     
     public void setEmAndamento(boolean emAndamento) {
         this.emAndamento = emAndamento;
+    }
+    
+    /**
+     * Obtém a hora de início baseada no alert (created_at do alert)
+     * Se não houver alert salvo, usa dataInicio como fallback
+     * A dataInicio já é carregada com o created_at do alert quando disponível
+     */
+    public Date getHoraInicioAlerta() {
+        // dataInicio já contém o created_at do alert quando carregado
+        return dataInicio;
+    }
+    
+    /**
+     * Obtém a hora final baseada na última localização (created_at da última location)
+     * Se não houver localizações, retorna null
+     */
+    public Date getHoraFimUltimaLocalizacao() {
+        if (localizacoes == null || localizacoes.isEmpty()) {
+            return null;
+        }
+        
+        // Encontrar a localização com timestamp mais recente
+        Date ultimaData = null;
+        for (Localizacao loc : localizacoes) {
+            if (loc.getTimestamp() != null) {
+                if (ultimaData == null || loc.getTimestamp().after(ultimaData)) {
+                    ultimaData = loc.getTimestamp();
+                }
+            }
+        }
+        
+        return ultimaData;
+    }
+    
+    /**
+     * Calcula a duração baseada na diferença entre:
+     * - Hora inicial: created_at do alert
+     * - Hora final: created_at da última localização
+     * Retorna duração em milissegundos
+     */
+    public long calcularDuracao() {
+        Date horaInicio = getHoraInicioAlerta();
+        Date horaFim = getHoraFimUltimaLocalizacao();
+        
+        if (horaInicio == null || horaFim == null) {
+            return 0;
+        }
+        
+        return horaFim.getTime() - horaInicio.getTime();
     }
 }
 

@@ -55,11 +55,17 @@ public class EmergenciaForegroundService extends Service {
             if ("START_EMERGENCY".equals(action)) {
                 usuarioId = intent.getStringExtra("usuario_id");
                 usuarioNome = intent.getStringExtra("usuario_nome");
+                String alertId = intent.getStringExtra("alert_id");
                 
                 // Recuperar listas de contatos do SharedPreferences (salvas temporariamente)
                 SharedPreferences prefs = getSharedPreferences("safetrace_prefs", MODE_PRIVATE);
                 String contatosIdsJson = prefs.getString("temp_contatos_ids", "[]");
                 String contatosNomesJson = prefs.getString("temp_contatos_nomes", "[]");
+                
+                // Se não veio no intent, tentar recuperar do SharedPreferences
+                if (alertId == null || alertId.isEmpty()) {
+                    alertId = prefs.getString("current_alert_id", null);
+                }
                 
                 try {
                     org.json.JSONArray idsArray = new org.json.JSONArray(contatosIdsJson);
@@ -80,7 +86,7 @@ public class EmergenciaForegroundService extends Service {
                     contatosNomes = new java.util.ArrayList<>();
                 }
                 
-                iniciarEmergencia();
+                iniciarEmergencia(alertId);
             } else if ("STOP_EMERGENCY".equals(action)) {
                 finalizarEmergencia();
                 stopForeground(true);
@@ -96,12 +102,12 @@ public class EmergenciaForegroundService extends Service {
         return binder;
     }
     
-    private void iniciarEmergencia() {
-        Log.d(TAG, "Iniciando emergência no foreground service");
+    private void iniciarEmergencia(String alertId) {
+        Log.d(TAG, "Iniciando emergência no foreground service com alertId: " + alertId);
         
         // Iniciar emergência
         if (emergenciaService != null && usuarioId != null && usuarioNome != null) {
-            emergenciaService.iniciarEmergencia(usuarioId, usuarioNome, contatosIds, contatosNomes);
+            emergenciaService.iniciarEmergencia(usuarioId, usuarioNome, contatosIds, contatosNomes, alertId);
         }
         
         // Iniciar rastreamento de localização

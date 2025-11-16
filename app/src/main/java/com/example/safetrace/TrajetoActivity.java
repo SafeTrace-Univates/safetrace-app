@@ -1,12 +1,16 @@
 package com.example.safetrace;
 
+import android.content.Intent;
 import android.media.MediaPlayer;
+import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import androidx.core.content.FileProvider;
 
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -20,6 +24,7 @@ import com.example.safetrace.service.EmergenciaService;
 
 import java.io.IOException;
 import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
@@ -30,6 +35,7 @@ public class TrajetoActivity extends AppCompatActivity {
     private Emergencia emergencia;
     private MediaPlayer mediaPlayer;
     private MaterialButton buttonPlayAudio;
+    private MaterialButton buttonCompartilharAudio;
     private boolean isPlaying = false;
     private TextView textViewDados;
 
@@ -186,6 +192,7 @@ public class TrajetoActivity extends AppCompatActivity {
 
     private void initializeViews() {
         buttonPlayAudio = findViewById(R.id.buttonPlayAudio);
+        buttonCompartilharAudio = findViewById(R.id.buttonCompartilharAudio);
         textViewDados = findViewById(R.id.textViewDados);
         
         ImageView imageViewVoltar = findViewById(R.id.imageViewVoltar);
@@ -193,19 +200,23 @@ public class TrajetoActivity extends AppCompatActivity {
             imageViewVoltar.setOnClickListener(v -> finish());
         }
         
-        // Verificar se há áudio disponível e habilitar/desabilitar botão
+        // Verificar se há áudio disponível e habilitar/desabilitar botões
+        boolean audioDisponivel = false;
         if (emergencia != null && emergencia.getCaminhoAudio() != null && !emergencia.getCaminhoAudio().isEmpty()) {
             File audioFile = new File(emergencia.getCaminhoAudio());
-            if (!audioFile.exists()) {
-                if (buttonPlayAudio != null) {
-                    buttonPlayAudio.setEnabled(false);
-                    buttonPlayAudio.setText(getString(R.string.audio_not_available));
-                }
+            if (audioFile.exists()) {
+                audioDisponivel = true;
             }
-        } else {
+        }
+        
+        if (!audioDisponivel) {
             if (buttonPlayAudio != null) {
                 buttonPlayAudio.setEnabled(false);
                 buttonPlayAudio.setText(getString(R.string.audio_not_available));
+            }
+            if (buttonCompartilharAudio != null) {
+                buttonCompartilharAudio.setEnabled(false);
+                buttonCompartilharAudio.setVisibility(View.GONE);
             }
         }
     }
@@ -213,6 +224,9 @@ public class TrajetoActivity extends AppCompatActivity {
     private void setupClickListeners() {
         if (buttonPlayAudio != null) {
             buttonPlayAudio.setOnClickListener(v -> toggleAudio());
+        }
+        if (buttonCompartilharAudio != null) {
+            buttonCompartilharAudio.setOnClickListener(v -> compartilharAudio());
         }
     }
 
@@ -222,16 +236,38 @@ public class TrajetoActivity extends AppCompatActivity {
         SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy HH:mm", Locale.getDefault());
         
         StringBuilder dados = new StringBuilder();
-        dados.append("Data/Hora Início: ").append(dateFormat.format(emergencia.getDataInicio())).append("\n\n");
         
-        if (emergencia.getDataFim() != null) {
-            dados.append("Data/Hora Fim: ").append(dateFormat.format(emergencia.getDataFim())).append("\n");
-            long duracao = emergencia.getDataFim().getTime() - emergencia.getDataInicio().getTime();
-            long minutos = duracao / 60000;
-            long segundos = (duracao % 60000) / 1000;
-            dados.append("Duração: ").append(minutos).append(" min ").append(segundos).append(" s\n\n");
+        // Usar hora de início do alert (created_at do alert)
+        Date horaInicio = emergencia.getHoraInicioAlerta();
+        if (horaInicio == null) {
+            horaInicio = emergencia.getDataInicio(); // Fallback
+        }
+        dados.append("Data/Hora Início: ").append(dateFormat.format(horaInicio)).append("\n\n");
+        
+        // Usar hora final da última localização (created_at da última location)
+        Date horaFim = emergencia.getHoraFimUltimaLocalizacao();
+        if (horaFim != null) {
+            dados.append("Data/Hora Fim: ").append(dateFormat.format(horaFim)).append("\n");
+            // Calcular duração baseada na diferença entre hora início do alert e hora fim da última localização
+            long duracao = emergencia.calcularDuracao();
+            if (duracao > 0) {
+                long minutos = duracao / 60000;
+                long segundos = (duracao % 60000) / 1000;
+                dados.append("Duração: ").append(minutos).append(" min ").append(segundos).append(" s\n\n");
+            } else {
+                dados.append("Duração: Não disponível\n\n");
+            }
         } else {
-            dados.append("Emergência ainda em andamento\n\n");
+            // Se não houver localizações, verificar se tem dataFim (compatibilidade)
+            if (emergencia.getDataFim() != null) {
+                dados.append("Data/Hora Fim: ").append(dateFormat.format(emergencia.getDataFim())).append("\n");
+                long duracao = emergencia.getDataFim().getTime() - horaInicio.getTime();
+                long minutos = duracao / 60000;
+                long segundos = (duracao % 60000) / 1000;
+                dados.append("Duração: ").append(minutos).append(" min ").append(segundos).append(" s\n\n");
+            } else {
+                dados.append("Emergência ainda em andamento\n\n");
+            }
         }
         
         dados.append("Usuário: ").append(emergencia.getUsuarioNome()).append("\n\n");
@@ -448,6 +484,48 @@ public class TrajetoActivity extends AppCompatActivity {
         isPlaying = false;
         buttonPlayAudio.setText(getString(R.string.play_audio));
         buttonPlayAudio.setEnabled(true);
+    }
+    
+    private void compartilharAudio() {
+        if (emergencia == null) {
+            Toast.makeText(this, "Emergência não disponível", Toast.LENGTH_SHORT).show();
+            return;
+        }
+        
+        String caminhoAudio = emergencia.getCaminhoAudio();
+        if (caminhoAudio == null || caminhoAudio.isEmpty()) {
+            Toast.makeText(this, "Áudio não disponível para compartilhamento", Toast.LENGTH_SHORT).show();
+            return;
+        }
+        
+        File audioFile = new File(caminhoAudio);
+        if (!audioFile.exists()) {
+            Toast.makeText(this, "Arquivo de áudio não encontrado", Toast.LENGTH_SHORT).show();
+            return;
+        }
+        
+        try {
+            // Criar URI usando FileProvider para Android 7.0+
+            Uri audioUri = FileProvider.getUriForFile(
+                this,
+                getPackageName() + ".fileprovider",
+                audioFile
+            );
+            
+            Intent shareIntent = new Intent(Intent.ACTION_SEND);
+            shareIntent.setType("audio/*");
+            shareIntent.putExtra(Intent.EXTRA_STREAM, audioUri);
+            shareIntent.putExtra(Intent.EXTRA_TEXT, "Áudio da emergência de " + emergencia.getUsuarioNome());
+            shareIntent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+            
+            Intent chooserIntent = Intent.createChooser(shareIntent, "Compartilhar áudio");
+            chooserIntent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+            
+            startActivity(chooserIntent);
+        } catch (Exception e) {
+            Log.e(TAG, "Erro ao compartilhar áudio", e);
+            Toast.makeText(this, "Erro ao compartilhar áudio: " + e.getMessage(), Toast.LENGTH_LONG).show();
+        }
     }
     
     private void mostrarErroMapa(String mensagem) {

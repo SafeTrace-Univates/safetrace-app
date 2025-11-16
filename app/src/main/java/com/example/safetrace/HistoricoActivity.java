@@ -23,6 +23,7 @@ import org.json.JSONObject;
 
 import java.text.SimpleDateFormat;
 import java.util.Comparator;
+import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
@@ -92,6 +93,10 @@ public class HistoricoActivity extends AppCompatActivity implements NavigationVi
         } else if (id == R.id.nav_historico) {
             // Já estamos na tela de histórico, apenas fechar o drawer
             drawerLayout.closeDrawer(navigationView);
+        } else if (id == R.id.nav_perfil) {
+            Intent intent = new Intent(this, PerfilActivity.class);
+            startActivity(intent);
+            finish();
         } else if (id == R.id.nav_logout) {
             APIService.getInstance(this).logout(this, new APIService.APIServiceCallback() {
                 @Override
@@ -134,13 +139,16 @@ public class HistoricoActivity extends AppCompatActivity implements NavigationVi
             return;
         }
         
-        // Ordenar por data de início: mais novas primeiro (ordem decrescente)
+        // Ordenar por hora de início do alert: mais novas primeiro (ordem decrescente)
         emergencias.sort(new Comparator<Emergencia>() {
             @Override
             public int compare(Emergencia e1, Emergencia e2) {
-                // Comparar por data de início (mais recente primeiro = ordem decrescente)
-                // Se a data de e1 é mais recente que e2, retorna negativo (e1 vem antes)
-                return e2.getDataInicio().compareTo(e1.getDataInicio());
+                // Comparar por hora de início do alert (mais recente primeiro = ordem decrescente)
+                Date hora1 = e1.getHoraInicioAlerta();
+                Date hora2 = e2.getHoraInicioAlerta();
+                if (hora1 == null) hora1 = e1.getDataInicio();
+                if (hora2 == null) hora2 = e2.getDataInicio();
+                return hora2.compareTo(hora1);
             }
         });
         
@@ -163,13 +171,26 @@ public class HistoricoActivity extends AppCompatActivity implements NavigationVi
         TextView txtNomeAcionados = cardView.findViewById(R.id.txtNomeAcionados);
         View btnVerMapa = cardView.findViewById(R.id.btnVerMapa);
         
-        txtData.setText(dateFormat.format(emergencia.getDataInicio()));
-        txtHoraInicio.setText(getString(R.string.start_time, timeFormat.format(emergencia.getDataInicio())));
+        // Usar hora de início do alert (created_at do alert)
+        Date horaInicio = emergencia.getHoraInicioAlerta();
+        if (horaInicio == null) {
+            horaInicio = emergencia.getDataInicio(); // Fallback
+        }
         
-        if (emergencia.getDataFim() != null) {
-            txtHoraFim.setText(getString(R.string.end_time, timeFormat.format(emergencia.getDataFim())));
+        txtData.setText(dateFormat.format(horaInicio));
+        txtHoraInicio.setText(getString(R.string.start_time, timeFormat.format(horaInicio)));
+        
+        // Usar hora final da última localização (created_at da última location)
+        Date horaFim = emergencia.getHoraFimUltimaLocalizacao();
+        if (horaFim != null) {
+            txtHoraFim.setText(getString(R.string.end_time, timeFormat.format(horaFim)));
         } else {
-            txtHoraFim.setText(getString(R.string.end_time_in_progress));
+            // Se não houver localizações, verificar se tem dataFim (compatibilidade)
+            if (emergencia.getDataFim() != null) {
+                txtHoraFim.setText(getString(R.string.end_time, timeFormat.format(emergencia.getDataFim())));
+            } else {
+                txtHoraFim.setText(getString(R.string.end_time_in_progress));
+            }
         }
         
         txtNomeAcionador.setText(emergencia.getUsuarioNome());

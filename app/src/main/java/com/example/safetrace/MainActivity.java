@@ -106,6 +106,10 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         setupDrawer();
         setupClickListeners();
         
+        // Processar fila de dados pendentes quando app iniciar (se houver conexão)
+        com.example.safetrace.service.SyncService syncService = com.example.safetrace.service.SyncService.getInstance(this);
+        syncService.processPendingQueue();
+        
         // Atualizar estado do botão APÓS inicializar as views
         if (buttonEmergencia != null) {
             atualizarBotaoEmergencia();
@@ -119,6 +123,10 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         if (navigationView != null) {
             navigationView.setCheckedItem(R.id.nav_home);
         }
+        
+        // Processar fila de dados pendentes quando app voltar ao foreground (se houver conexão)
+        com.example.safetrace.service.SyncService syncService = com.example.safetrace.service.SyncService.getInstance(this);
+        syncService.processPendingQueue();
     }
 
     private void initializeViews() {
@@ -197,6 +205,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         } else if (id == R.id.nav_historico) {
             // Navegar para a tela de histórico
             Intent intent = new Intent(this, HistoricoActivity.class);
+            startActivity(intent);
+        } else if (id == R.id.nav_perfil) {
+            Intent intent = new Intent(this, PerfilActivity.class);
             startActivity(intent);
         } else if (id == R.id.nav_logout) {
             APIService.getInstance(this).logout(this, new APIService.APIServiceCallback() {
@@ -377,6 +388,73 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private void continuarIniciarEmergencia(List<String> contatosIds, List<String> contatosNomes, String usuarioNome, String usuarioId) {
         android.util.Log.d("MainActivity", "Continuando emergência para usuário: " + usuarioNome + " (ID: " + usuarioId + ")");
         
+        // Verificar se temos o ID do usuário
+        if (usuarioId == null || usuarioId.isEmpty() || usuarioId.equals("desconhecido")) {
+            android.util.Log.e("MainActivity", "ID do usuário não disponível");
+            Toast.makeText(this, "Erro: ID do usuário não disponível. Faça login novamente.", Toast.LENGTH_LONG).show();
+            return;
+        }
+        
+        // Verificar conectividade antes de tentar criar alerta na API
+        boolean hasInternet = com.example.safetrace.util.NetworkUtils.isNetworkAvailable(this);
+        
+        if (hasInternet) {
+            // Criar alerta na API conforme ER model: apenas ref_user (sem name, sem contacts)
+            // Os contatos serão vinculados via tabela alert_contact separadamente
+            android.util.Log.d("MainActivity", "Conexão disponível. Criando alerta na API com ref_user: " + usuarioId);
+            APIService.getInstance(this).createAlert(this, usuarioId, null, new ArrayList<String>(), new APIService.APIServiceCallback() {
+                @Override
+                public void onSuccess(JSONObject response) {
+                    android.util.Log.d("MainActivity", "Alerta criado com sucesso na API");
+                    try {
+                        // Extrair o ID do alerta criado da resposta
+                        String alertId = null;
+                        if (response.has("data")) {
+                            JSONObject data = response.getJSONObject("data");
+                            alertId = data.optString("id", null);
+                        } else if (response.has("id")) {
+                            alertId = response.optString("id", null);
+                        }
+                        
+                        // Salvar ID do alerta para uso posterior (localizações, gravações, etc.)
+                        if (alertId != null) {
+                            SharedPreferences prefs = getSharedPreferences("safetrace_prefs", MODE_PRIVATE);
+                            prefs.edit().putString("current_alert_id", alertId).apply();
+                            android.util.Log.d("MainActivity", "ID do alerta salvo: " + alertId);
+                        }
+                        
+                        // Continuar com o processo de emergência local
+                        iniciarServicoEmergencia(contatosIds, contatosNomes, usuarioNome, usuarioId, alertId);
+                    } catch (JSONException e) {
+                        android.util.Log.e("MainActivity", "Erro ao processar resposta do alerta", e);
+                        // Continuar mesmo sem o ID do alerta
+                        iniciarServicoEmergencia(contatosIds, contatosNomes, usuarioNome, usuarioId, null);
+                    }
+                }
+
+                @Override
+                public void onError(String error) {
+                    android.util.Log.e("MainActivity", "Erro ao criar alerta na API: " + error);
+                    // Se falhar, adicionar à fila pendente e continuar localmente
+                    com.example.safetrace.service.SyncService syncService = com.example.safetrace.service.SyncService.getInstance(MainActivity.this);
+                    syncService.addToPendingQueue(null, usuarioId, null, null, null);
+                    Toast.makeText(MainActivity.this, "Sem conexão. Dados serão salvos localmente e enviados depois.", Toast.LENGTH_LONG).show();
+                    // Continuar mesmo sem criar na API - será criado depois quando houver conexão
+                    iniciarServicoEmergencia(contatosIds, contatosNomes, usuarioNome, usuarioId, null);
+                }
+            });
+        } else {
+            // Sem internet - adicionar à fila pendente e continuar localmente
+            android.util.Log.d("MainActivity", "Sem conexão com internet. Salvando localmente e adicionando à fila pendente.");
+            com.example.safetrace.service.SyncService syncService = com.example.safetrace.service.SyncService.getInstance(this);
+            syncService.addToPendingQueue(null, usuarioId, null, null, null);
+            Toast.makeText(this, "Sem conexão. Dados serão salvos localmente e enviados quando houver internet.", Toast.LENGTH_LONG).show();
+            // Continuar com emergência local - alert será criado depois quando houver conexão
+            iniciarServicoEmergencia(contatosIds, contatosNomes, usuarioNome, usuarioId, null);
+        }
+    }
+    
+    private void iniciarServicoEmergencia(List<String> contatosIds, List<String> contatosNomes, String usuarioNome, String usuarioId, String alertId) {
         // Salvar contatos temporariamente no SharedPreferences para o serviço acessar
         SharedPreferences prefs = getSharedPreferences("safetrace_prefs", MODE_PRIVATE);
         org.json.JSONArray idsArray = new org.json.JSONArray();
@@ -392,11 +470,19 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             .putString("temp_contatos_nomes", nomesArray.toString())
             .apply();
         
+        // Salvar ID do alerta se disponível
+        if (alertId != null) {
+            prefs.edit().putString("current_alert_id", alertId).apply();
+        }
+        
         // Iniciar foreground service
         Intent serviceIntent = new Intent(this, com.example.safetrace.service.EmergenciaForegroundService.class);
         serviceIntent.setAction("START_EMERGENCY");
         serviceIntent.putExtra("usuario_id", usuarioId);
         serviceIntent.putExtra("usuario_nome", usuarioNome);
+        if (alertId != null) {
+            serviceIntent.putExtra("alert_id", alertId);
+        }
         
         if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
             startForegroundService(serviceIntent);

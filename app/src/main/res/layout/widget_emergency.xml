@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/bg_card_borda_rosa"
+    android:gravity="center"
+    android:orientation="vertical"
+    android:padding="8dp">
+
+    <Button
+        android:id="@+id/widgetButtonEmergency"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@drawable/bg_botao_arredondado"
+        android:fontFamily="@font/poppins_semibold"
+        android:padding="6dp"
+        android:text="Emergência"
+        android:textAllCaps="false"
+        android:textColor="@color/fundo"
+        android:textSize="14sp" />
+</LinearLayout>
+
+

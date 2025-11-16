@@ -269,12 +269,23 @@ public class CadastroContatosActivity extends AppCompatActivity implements Navig
                     if (data.length() > 0) {
                         scrollViewContatos.setVisibility(View.VISIBLE);
 
-                        // Criar botões para cada contato da API, mostrando o NOME
+                        // Recuperar IDs localmente excluídos para filtrar
+                        java.util.Set<String> locallyDeleted = getLocallyDeletedContactIds();
+
+                        // Criar linhas para cada contato da API
                         for (int i = 0; i < data.length(); i++) {
                             JSONObject contactJson = data.getJSONObject(i);
+                            String contactId = String.valueOf(contactJson.optInt("id"));
+
+                            // Pular contatos marcados como excluídos localmente
+                            if (contactId != null && locallyDeleted.contains(contactId)) {
+                                continue;
+                            }
+
                             String nickname = contactJson.isNull("nickname") ? null : contactJson.getString("nickname");
                             JSONObject userJson = contactJson.optJSONObject("user");
                             String displayName;
+                            String phoneNumber = null;
 
                             // Priorizar nickname, depois nome do usuário
                             if (nickname != null && !nickname.isEmpty()) {
@@ -285,8 +296,11 @@ public class CadastroContatosActivity extends AppCompatActivity implements Navig
                                 displayName = "Desconhecido";
                             }
 
-                            MaterialButton btn = createContactButton(displayName);
-                            layoutContatos.addView(btn);
+                            if (userJson != null) {
+                                phoneNumber = userJson.optString("phone", null);
+                            }
+
+                            layoutContatos.addView(createContactRow(displayName, phoneNumber, contactId));
                         }
                     } else {
                         scrollViewContatos.setVisibility(View.GONE);
@@ -304,6 +318,116 @@ public class CadastroContatosActivity extends AppCompatActivity implements Navig
                 scrollViewContatos.setVisibility(View.GONE);
             }
         });
+    }
+
+    // Cria uma linha com botão do contato (discador) e botão Excluir (local)
+    private View createContactRow(String displayName, String phoneNumber, String contactId) {
+        LinearLayout row = new LinearLayout(this);
+        row.setOrientation(LinearLayout.HORIZONTAL);
+        LinearLayout.LayoutParams rowParams = new LinearLayout.LayoutParams(
+                LinearLayout.LayoutParams.MATCH_PARENT,
+                (int) (61 * getResources().getDisplayMetrics().density)
+        );
+        rowParams.setMargins(0, (int) (8 * getResources().getDisplayMetrics().density), 0, (int) (8 * getResources().getDisplayMetrics().density));
+        row.setLayoutParams(rowParams);
+
+        // Botão do contato (mostra nome; ao clicar abre discador com telefone)
+        MaterialButton btnContato = new MaterialButton(this);
+        LinearLayout.LayoutParams btnParams = new LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.MATCH_PARENT, 1f);
+        btnContato.setLayoutParams(btnParams);
+        btnContato.setText(displayName != null ? displayName : "Contato");
+        btnContato.setTextSize(18);
+        btnContato.setTextColor(getResources().getColor(R.color.primaria));
+        btnContato.setBackgroundTintList(getResources().getColorStateList(android.R.color.transparent));
+        btnContato.setStrokeColor(getResources().getColorStateList(R.color.primaria));
+        btnContato.setStrokeWidth((int) (2 * getResources().getDisplayMetrics().density));
+        btnContato.setCornerRadius((int) (6 * getResources().getDisplayMetrics().density));
+        btnContato.setRippleColor(getResources().getColorStateList(R.color.primaria));
+        btnContato.setAllCaps(false);
+        btnContato.setElevation(0);
+        btnContato.setStateListAnimator(null);
+
+        final String finalPhone = phoneNumber;
+        btnContato.setOnClickListener(v -> {
+            if (finalPhone == null || finalPhone.isEmpty()) {
+                Toast.makeText(this, "Telefone não disponível para este contato", Toast.LENGTH_SHORT).show();
+            } else {
+                makeCall(finalPhone);
+            }
+        });
+
+        // Botão Excluir (remove localmente, sem API)
+        MaterialButton btnExcluir = new MaterialButton(this);
+        LinearLayout.LayoutParams delParams = new LinearLayout.LayoutParams(
+                (int) (110 * getResources().getDisplayMetrics().density),
+                LinearLayout.LayoutParams.MATCH_PARENT
+        );
+        delParams.setMargins((int) (8 * getResources().getDisplayMetrics().density), 0, 0, 0);
+        btnExcluir.setLayoutParams(delParams);
+        btnExcluir.setText("Excluir");
+        btnExcluir.setTextSize(14);
+        btnExcluir.setAllCaps(false);
+        btnExcluir.setBackgroundTintList(getResources().getColorStateList(R.color.primaria));
+        btnExcluir.setTextColor(getResources().getColor(R.color.fundo));
+        btnExcluir.setCornerRadius((int) (6 * getResources().getDisplayMetrics().density));
+        btnExcluir.setOnClickListener(v -> confirmarExclusaoLocal(contactId));
+
+        row.addView(btnContato);
+        row.addView(btnExcluir);
+        return row;
+    }
+
+    private void confirmarExclusaoLocal(String contactId) {
+        if (contactId == null || contactId.isEmpty()) {
+            Toast.makeText(this, "ID do contato inválido", Toast.LENGTH_SHORT).show();
+            return;
+        }
+        new androidx.appcompat.app.AlertDialog.Builder(this)
+                .setTitle("Excluir contato")
+                .setMessage("Deseja realmente excluir este contato? (A exclusão será apenas local)")
+                .setPositiveButton("Excluir", (dialog, which) -> {
+                    addLocallyDeletedContactId(contactId);
+                    loadContactsFromApi();
+                })
+                .setNegativeButton("Cancelar", null)
+                .show();
+    }
+
+    private java.util.Set<String> getLocallyDeletedContactIds() {
+        SharedPreferences prefs = getSharedPreferences("safetrace_prefs", MODE_PRIVATE);
+        String json = prefs.getString("locally_deleted_contacts", "[]");
+        java.util.Set<String> ids = new java.util.HashSet<>();
+        try {
+            org.json.JSONArray arr = new org.json.JSONArray(json);
+            for (int i = 0; i < arr.length(); i++) {
+                ids.add(arr.getString(i));
+            }
+        } catch (org.json.JSONException e) {
+            // Ignorar e retornar vazio
+        }
+        return ids;
+    }
+
+    private void addLocallyDeletedContactId(String contactId) {
+        SharedPreferences prefs = getSharedPreferences("safetrace_prefs", MODE_PRIVATE);
+        String json = prefs.getString("locally_deleted_contacts", "[]");
+        try {
+            org.json.JSONArray arr = new org.json.JSONArray(json);
+            // Evitar duplicado
+            boolean exists = false;
+            for (int i = 0; i < arr.length(); i++) {
+                if (contactId.equals(arr.getString(i))) { exists = true; break; }
+            }
+            if (!exists) {
+                arr.put(contactId);
+                prefs.edit().putString("locally_deleted_contacts", arr.toString()).apply();
+            }
+        } catch (org.json.JSONException e) {
+            // Reset em caso de erro
+            org.json.JSONArray arr = new org.json.JSONArray();
+            arr.put(contactId);
+            prefs.edit().putString("locally_deleted_contacts", arr.toString()).apply();
+        }
     }
 
     private MaterialButton createContactButton(String phoneNumber) {
@@ -368,6 +492,10 @@ public class CadastroContatosActivity extends AppCompatActivity implements Navig
         } else if (id == R.id.nav_historico) {
             // Navegar para a tela de histórico
             Intent intent = new Intent(this, HistoricoActivity.class);
+            startActivity(intent);
+            finish();
+        } else if (id == R.id.nav_perfil) {
+            Intent intent = new Intent(this, PerfilActivity.class);
             startActivity(intent);
             finish();
         } else if (id == R.id.nav_logout) {
