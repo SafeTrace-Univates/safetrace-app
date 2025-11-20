@@ -14,6 +14,7 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.ContextCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 
 import com.example.safetrace.model.Emergencia;
@@ -135,6 +136,13 @@ public class HistoricoActivity extends AppCompatActivity implements NavigationVi
             emptyText.setText(getString(R.string.no_emergencies_registered));
             emptyText.setTextSize(16);
             emptyText.setPadding(32, 32, 32, 32);
+            emptyText.setTextColor(ContextCompat.getColor(this, android.R.color.black));
+            emptyText.setGravity(android.view.Gravity.CENTER);
+            LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(
+                LinearLayout.LayoutParams.MATCH_PARENT,
+                LinearLayout.LayoutParams.MATCH_PARENT
+            );
+            emptyText.setLayoutParams(params);
             containerChamadas.addView(emptyText);
             return;
         }

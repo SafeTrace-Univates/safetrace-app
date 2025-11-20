@@ -95,10 +95,13 @@
         app:strokeColor="@color/primaria"
         app:strokeWidth="2dp" />
 
+    <!-- Botão Login -->
+
     <EditText
         android:id="@+id/editTextLogin"
-        android:layout_width="290dp"
-        android:layout_height="25dp"
+        android:layout_width="286dp"
+        android:layout_height="23dp"
+        android:layout_marginStart="15dp"
         android:background="@android:color/transparent"
         android:ems="10"
         android:fontFamily="@font/poppins"
@@ -110,11 +113,10 @@
         android:textSize="18sp"
         app:layout_constraintBottom_toBottomOf="@+id/buttonBordaLogin"
         app:layout_constraintEnd_toStartOf="@+id/guidelineBordaDireita"
+        app:layout_constraintHorizontal_bias="0.542"
         app:layout_constraintStart_toStartOf="@+id/buttonBordaLogin"
         app:layout_constraintTop_toTopOf="@+id/buttonBordaLogin"
-        app:layout_constraintVertical_bias="0.62" />
-
-    <!-- Botão Login -->
+        app:layout_constraintVertical_bias="0.594" />
 
     <com.google.android.material.button.MaterialButton
         android:id="@+id/buttonBordaSenha"
@@ -155,7 +157,7 @@
         app:layout_constraintEnd_toStartOf="@+id/imageViewToggleSenha"
         app:layout_constraintStart_toEndOf="@+id/imageView6"
         app:layout_constraintTop_toTopOf="@+id/buttonBordaSenha"
-        app:layout_constraintVertical_bias="0.515" />
+        app:layout_constraintVertical_bias="0.575" />
 
     <ImageView
         android:id="@+id/imageViewToggleSenha"
@@ -217,6 +219,8 @@
         app:layout_constraintStart_toEndOf="@+id/textViewNaoConta"
         app:layout_constraintTop_toBottomOf="@+id/buttonBordaSenha" />
 
+    <!-- Removido: Esqueci minha senha -->
+
     <TextView
         android:id="@+id/textViewNaoConta"
         android:layout_width="wrap_content"
@@ -232,9 +236,8 @@
         app:layout_constraintBottom_toTopOf="@+id/buttonLogin"
         app:layout_constraintEnd_toStartOf="@+id/textViewCadastro"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/buttonBordaSenha" />
-
-    <!-- Removido: Esqueci minha senha -->
+        app:layout_constraintTop_toBottomOf="@+id/buttonBordaSenha"
+        app:layout_constraintVertical_bias="0.454" />
 
     <TextView
         android:id="@+id/textViewSuaSegurança"
@@ -257,6 +260,7 @@
         android:id="@+id/imageView5"
         android:layout_width="29dp"
         android:layout_height="29dp"
+        android:layout_marginStart="10dp"
         app:layout_constraintBottom_toBottomOf="@+id/buttonBordaLogin"
         app:layout_constraintEnd_toStartOf="@+id/editTextLogin"
         app:layout_constraintStart_toStartOf="@+id/buttonBordaLogin"
@@ -267,6 +271,7 @@
         android:id="@+id/imageView6"
         android:layout_width="30dp"
         android:layout_height="29dp"
+        android:layout_marginStart="15dp"
         app:layout_constraintBottom_toBottomOf="@+id/buttonBordaSenha"
         app:layout_constraintEnd_toStartOf="@+id/editTextSenha"
         app:layout_constraintHorizontal_bias="0.458"

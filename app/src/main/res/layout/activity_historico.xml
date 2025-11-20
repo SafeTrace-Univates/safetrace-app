@@ -83,8 +83,10 @@
         android:id="@+id/imageViewMenu"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginEnd="5dp"
         app:layout_constraintBottom_toTopOf="@+id/guidelineLogo"
         app:layout_constraintEnd_toStartOf="@+id/guidelineBordaDireita"
+        app:layout_constraintStart_toEndOf="@+id/textTitulo"
         app:layout_constraintTop_toTopOf="@+id/guidelineBordaTopo"
         app:layout_constraintVertical_bias="0.523"
         app:srcCompat="@drawable/baseline_dehaze_24" />
@@ -117,7 +119,7 @@
         app:layout_constraintBottom_toTopOf="@+id/guidelineBordaFim"
         app:layout_constraintEnd_toStartOf="@+id/guidelineBordaDireita"
         app:layout_constraintStart_toStartOf="@+id/guidelineBordaEsquerda"
-        app:layout_constraintTop_toTopOf="@+id/txtTitulo">
+        app:layout_constraintTop_toBottomOf="@+id/txtTitulo">
 
         <LinearLayout
             android:id="@+id/containerChamadas"
