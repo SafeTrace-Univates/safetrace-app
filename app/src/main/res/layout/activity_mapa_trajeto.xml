@@ -30,9 +30,8 @@
     <FrameLayout
         android:id="@+id/mapContainer"
         android:layout_width="0dp"
-        android:layout_height="0dp"
+        android:layout_height="250dp"
         android:layout_marginTop="8dp"
-        app:layout_constraintBottom_toTopOf="@+id/scrollViewDados"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/imageViewVoltar" />
@@ -43,22 +42,29 @@
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:layout_marginTop="8dp"
-        android:maxHeight="250dp"
+        android:layout_marginBottom="8dp"
+        android:scrollbars="vertical"
         app:layout_constraintBottom_toTopOf="@+id/buttonPlayAudio"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/mapContainer">
 
-        <TextView
-            android:id="@+id/textViewDados"
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_margin="16dp"
-            android:fontFamily="@font/poppins"
-            android:lineSpacingExtra="4dp"
-            android:text="Dados do trajeto"
-            android:textColor="@color/black"
-            android:textSize="14sp" />
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/textViewDados"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="16dp"
+                android:fontFamily="@font/poppins"
+                android:lineSpacingExtra="4dp"
+                android:text="Dados do trajeto"
+                android:textColor="@color/black"
+                android:textSize="14sp" />
+        </LinearLayout>
     </ScrollView>
 
     <!-- Botão Reproduzir Áudio -->

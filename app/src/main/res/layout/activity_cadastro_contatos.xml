@@ -147,14 +147,14 @@
             android:layout_marginBottom="10dp"
             android:backgroundTint="@android:color/transparent"
             android:fontFamily="@font/poppins"
+            android:paddingStart="56dp"
+            android:paddingEnd="16dp"
             android:stateListAnimator="@null"
             android:text="Gerar meu QrCode/Código"
             android:textAlignment="viewStart"
             android:textAllCaps="false"
             android:textColor="@color/primaria"
             android:textSize="15sp"
-            android:paddingStart="56dp"
-            android:paddingEnd="16dp"
             app:cornerRadius="6dp"
             app:layout_constraintBottom_toTopOf="@+id/buttonBordaAdicionarQr"
             app:layout_constraintEnd_toStartOf="@+id/guidelineBordaDireita"
@@ -165,13 +165,14 @@
             app:strokeWidth="3dp" />
 
 
-
         <ImageView
             android:id="@+id/imageQr"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="16dp"
+            android:layout_marginEnd="340dp"
             app:layout_constraintBottom_toBottomOf="@+id/buttonBordaGerarQr"
+            app:layout_constraintEnd_toEndOf="@+id/buttonBordaGerarQr"
             app:layout_constraintStart_toStartOf="@+id/buttonBordaGerarQr"
             app:layout_constraintTop_toTopOf="@+id/buttonBordaGerarQr"
             app:srcCompat="@drawable/baseline_qr_code_2_24" />
@@ -190,14 +191,14 @@
             android:layout_marginBottom="10dp"
             android:backgroundTint="@android:color/transparent"
             android:fontFamily="@font/poppins"
+            android:paddingStart="56dp"
+            android:paddingEnd="16dp"
             android:stateListAnimator="@null"
             android:text="Adicionar Contatos por QrCode"
             android:textAlignment="viewStart"
             android:textAllCaps="false"
             android:textColor="@color/primaria"
             android:textSize="15sp"
-            android:paddingStart="56dp"
-            android:paddingEnd="16dp"
             app:cornerRadius="6dp"
             app:layout_constraintBottom_toTopOf="@+id/buttonBordaCodigo"
             app:layout_constraintEnd_toStartOf="@+id/guidelineBordaDireita"
@@ -208,13 +209,14 @@
             app:strokeWidth="3dp" />
 
 
-
         <ImageView
             android:id="@+id/imageCamera"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="16dp"
+            android:layout_marginEnd="340dp"
             app:layout_constraintBottom_toBottomOf="@+id/buttonBordaAdicionarQr"
+            app:layout_constraintEnd_toEndOf="@+id/buttonBordaAdicionarQr"
             app:layout_constraintStart_toStartOf="@+id/buttonBordaAdicionarQr"
             app:layout_constraintTop_toTopOf="@+id/buttonBordaAdicionarQr"
             app:srcCompat="@drawable/baseline_local_see_24" />
@@ -268,13 +270,14 @@
             app:layout_constraintTop_toTopOf="@+id/buttonBordaCodigo" />
 
 
-
         <ImageView
             android:id="@+id/imageJogoVelha"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="16dp"
+            android:layout_marginEnd="8dp"
             app:layout_constraintBottom_toBottomOf="@+id/buttonBordaCodigo"
+            app:layout_constraintEnd_toStartOf="@+id/editTextCodigo"
             app:layout_constraintStart_toStartOf="@+id/buttonBordaCodigo"
             app:layout_constraintTop_toTopOf="@+id/buttonBordaCodigo"
             app:srcCompat="@drawable/baseline_numbers_24" />
@@ -289,6 +292,7 @@
             android:id="@+id/buttonSalvar"
             android:layout_width="wrap_content"
             android:layout_height="42dp"
+            android:layout_marginTop="10dp"
             android:backgroundTint="@color/verde"
             android:fontFamily="@font/poppins_semibold"
             android:stateListAnimator="@null"
@@ -341,14 +345,14 @@
 
         <ScrollView
             android:id="@+id/scrollViewContatos"
-            android:layout_width="364dp"
-            android:layout_height="277dp"
-            android:layout_marginTop="-10dp"
+            android:layout_width="360dp"
+            android:layout_height="0dp"
+            android:layout_marginTop="8dp"
             android:background="@drawable/bg_scroll_contatos"
             android:padding="14dp"
             android:paddingBottom="20dp"
             android:scrollbars="vertical"
-            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintBottom_toTopOf="@+id/guidelineBordaFim"
             app:layout_constraintEnd_toStartOf="@+id/guidelineBordaDireita"
             app:layout_constraintStart_toStartOf="@+id/guidelineBordaEsquerda"
             app:layout_constraintTop_toBottomOf="@+id/textViewMeusContatos">

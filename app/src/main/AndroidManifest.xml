@@ -56,7 +56,8 @@
         <!-- CadastroContatosActivity - Tela de cadastro de contatos -->
         <activity
             android:name=".CadastroContatosActivity"
-            android:exported="false" />
+            android:exported="false"
+            android:windowSoftInputMode="adjustResize" />
         
         <!-- HistoricoActivity - Tela de histórico de chamadas -->
         <activity
