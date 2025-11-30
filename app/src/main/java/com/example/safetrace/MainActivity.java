@@ -61,6 +61,17 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        
+        // Verificar autenticação antes de continuar
+        if (!verificarAutenticacao()) {
+            // Se não estiver autenticado, redirecionar para LoginActivity
+            Intent intent = new Intent(MainActivity.this, LoginActivity.class);
+            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+            startActivity(intent);
+            finish();
+            return;
+        }
+        
         EdgeToEdge.enable(this);
         setContentView(R.layout.activity_main);
         
@@ -210,30 +221,37 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             Intent intent = new Intent(this, PerfilActivity.class);
             startActivity(intent);
         } else if (id == R.id.nav_logout) {
-            APIService.getInstance(this).logout(this, new APIService.APIServiceCallback() {
-                @Override
-                public void onSuccess(JSONObject response) {
-                    // Optionally clear token on success
-                    SharedPreferences prefs = getSharedPreferences("safetrace_prefs", MODE_PRIVATE);
-                    prefs.edit().remove("api_token").apply();
-                    Toast.makeText(MainActivity.this,
-                            response.optString("message", "Desconectado com sucesso"),
-                            Toast.LENGTH_SHORT).show();
+            // Limpar dados locais primeiro
+            SharedPreferences prefs = getSharedPreferences("safetrace_prefs", MODE_PRIVATE);
+            String token = prefs.getString("api_token", null);
+            
+            // Tentar fazer logout na API se houver token
+            if (token != null && !token.isEmpty()) {
+                APIService.getInstance(this).logout(this, new APIService.APIServiceCallback() {
+                    @Override
+                    public void onSuccess(JSONObject response) {
+                        limparDadosUsuario();
+                        Toast.makeText(MainActivity.this,
+                                response.optString("message", "Desconectado com sucesso"),
+                                Toast.LENGTH_SHORT).show();
+                        redirecionarParaLogin();
+                    }
 
-                    // Navigate to LoginActivity, clear task/history
-                    Intent intent = new Intent(MainActivity.this, LoginActivity.class);
-                    intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-                    startActivity(intent);
-                    finish();
-                }
-
-                @Override
-                public void onError(String error) {
-                    Toast.makeText(MainActivity.this,
-                            "Erro ao desconectar: " + error,
-                            Toast.LENGTH_SHORT).show();
-                }
-            });
+                    @Override
+                    public void onError(String error) {
+                        // Mesmo com erro na API, limpar dados locais e deslogar
+                        limparDadosUsuario();
+                        Toast.makeText(MainActivity.this,
+                                "Desconectado localmente",
+                                Toast.LENGTH_SHORT).show();
+                        redirecionarParaLogin();
+                    }
+                });
+            } else {
+                // Sem token, apenas limpar dados locais
+                limparDadosUsuario();
+                redirecionarParaLogin();
+            }
             drawerLayout.closeDrawer(navigationView);
         }
         
@@ -254,6 +272,43 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     protected void onDestroy() {
         super.onDestroy();
         // Não parar emergência aqui, deixar o usuário finalizar manualmente
+    }
+    
+    private boolean verificarAutenticacao() {
+        SharedPreferences prefs = getSharedPreferences("safetrace_prefs", MODE_PRIVATE);
+        String token = prefs.getString("api_token", null);
+        String userId = prefs.getString("user_id", null);
+        
+        // Verificar se há token e user_id válidos
+        if (token == null || token.isEmpty()) {
+            android.util.Log.d("MainActivity", "Token não encontrado, redirecionando para login");
+            return false;
+        }
+        
+        if (userId == null || userId.isEmpty()) {
+            android.util.Log.d("MainActivity", "User ID não encontrado, redirecionando para login");
+            return false;
+        }
+        
+        return true;
+    }
+    
+    private void limparDadosUsuario() {
+        SharedPreferences prefs = getSharedPreferences("safetrace_prefs", MODE_PRIVATE);
+        prefs.edit()
+                .remove("api_token")
+                .remove("user_id")
+                .remove("user_name")
+                .remove("user_email")
+                .remove("user_phone")
+                .apply();
+    }
+    
+    private void redirecionarParaLogin() {
+        Intent intent = new Intent(MainActivity.this, LoginActivity.class);
+        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+        startActivity(intent);
+        finish();
     }
     
     private void verificarPermissoes() {

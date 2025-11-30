@@ -1,5 +1,6 @@
 package com.example.safetrace;
 
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.text.TextUtils;
@@ -36,6 +37,13 @@ public class PerfilActivity extends AppCompatActivity implements NavigationView.
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        
+        // Verificar autenticação antes de continuar
+        if (!verificarAutenticacao()) {
+            redirecionarParaLogin();
+            return;
+        }
+        
         setContentView(R.layout.activity_perfil);
 
         editTextNome = findViewById(R.id.editTextNome);
@@ -150,20 +158,38 @@ public class PerfilActivity extends AppCompatActivity implements NavigationView.
             }
         }
 
-        SharedPreferences prefs = getSharedPreferences("safetrace_prefs", MODE_PRIVATE);
-        prefs.edit()
-                .putString("user_name", nome)
-                .putString("user_email", email)
-                .putString("user_phone", telefone)
-                // Armazenar senha localmente apenas como placeholder (sem enviar à API ainda)
-                // Em produção, prefira salvar hash/salty e sincronizar com servidor
-                .putString("user_password", TextUtils.isEmpty(senha) ? prefs.getString("user_password", "") : senha)
-                .apply();
+        // Verificar conectividade
+        boolean hasInternet = com.example.safetrace.util.NetworkUtils.isNetworkAvailable(this);
+        
+        if (hasInternet) {
+            // Enviar à API
+            String senhaParaEnviar = TextUtils.isEmpty(senha) ? null : senha;
+            APIService.getInstance(this).updateUserProfile(this, nome, email, telefone, senhaParaEnviar, new APIService.APIServiceCallback() {
+                @Override
+                public void onSuccess(JSONObject response) {
+                    // Dados já foram atualizados localmente pelo APIService
+                    Toast.makeText(PerfilActivity.this, "Perfil atualizado com sucesso!", Toast.LENGTH_SHORT).show();
+                    finish();
+                }
 
-        Toast.makeText(this, "Dados salvos no dispositivo", Toast.LENGTH_SHORT).show();
+                @Override
+                public void onError(String error) {
+                    Toast.makeText(PerfilActivity.this, "Erro ao atualizar perfil: " + error, Toast.LENGTH_SHORT).show();
+                }
+            });
+        } else {
+            // Sem conexão - salvar apenas localmente
+            SharedPreferences prefs = getSharedPreferences("safetrace_prefs", MODE_PRIVATE);
+            prefs.edit()
+                    .putString("user_name", nome)
+                    .putString("user_email", email)
+                    .putString("user_phone", telefone)
+                    .putString("user_password", TextUtils.isEmpty(senha) ? prefs.getString("user_password", "") : senha)
+                    .apply();
 
-        // Futuro: enviar à API (mantendo compatível com a regra de não mexer na API agora)
-        finish();
+            Toast.makeText(this, "Sem conexão. Dados salvos apenas localmente.", Toast.LENGTH_SHORT).show();
+            finish();
+        }
     }
 
     @Override
@@ -219,6 +245,20 @@ public class PerfilActivity extends AppCompatActivity implements NavigationView.
         } else {
             super.onBackPressed();
         }
+    }
+    
+    private boolean verificarAutenticacao() {
+        SharedPreferences prefs = getSharedPreferences("safetrace_prefs", MODE_PRIVATE);
+        String token = prefs.getString("api_token", null);
+        String userId = prefs.getString("user_id", null);
+        return token != null && !token.isEmpty() && userId != null && !userId.isEmpty();
+    }
+    
+    private void redirecionarParaLogin() {
+        Intent intent = new Intent(PerfilActivity.this, LoginActivity.class);
+        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+        startActivity(intent);
+        finish();
     }
 }
 

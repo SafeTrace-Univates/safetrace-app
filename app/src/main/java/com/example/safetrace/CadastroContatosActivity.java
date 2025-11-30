@@ -64,6 +64,13 @@ public class CadastroContatosActivity extends AppCompatActivity implements Navig
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        
+        // Verificar autenticação antes de continuar
+        if (!verificarAutenticacao()) {
+            redirecionarParaLogin();
+            return;
+        }
+        
         setContentView(R.layout.activity_cadastro_contatos);
 
         initializeViews();
@@ -73,6 +80,20 @@ public class CadastroContatosActivity extends AppCompatActivity implements Navig
 
         // Carregar contatos da API
         loadContactsFromApi();
+    }
+    
+    private boolean verificarAutenticacao() {
+        SharedPreferences prefs = getSharedPreferences("safetrace_prefs", MODE_PRIVATE);
+        String token = prefs.getString("api_token", null);
+        String userId = prefs.getString("user_id", null);
+        return token != null && !token.isEmpty() && userId != null && !userId.isEmpty();
+    }
+    
+    private void redirecionarParaLogin() {
+        Intent intent = new Intent(CadastroContatosActivity.this, LoginActivity.class);
+        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+        startActivity(intent);
+        finish();
     }
 
     private void setupQrCodeLauncher() {
@@ -384,13 +405,38 @@ public class CadastroContatosActivity extends AppCompatActivity implements Navig
         }
         new androidx.appcompat.app.AlertDialog.Builder(this)
                 .setTitle("Excluir contato")
-                .setMessage("Deseja realmente excluir este contato? (A exclusão será apenas local)")
+                .setMessage("Deseja realmente excluir este contato?")
                 .setPositiveButton("Excluir", (dialog, which) -> {
-                    addLocallyDeletedContactId(contactId);
-                    loadContactsFromApi();
+                    excluirContato(contactId);
                 })
                 .setNegativeButton("Cancelar", null)
                 .show();
+    }
+
+    private void excluirContato(String contactId) {
+        // Verificar conectividade
+        boolean hasInternet = com.example.safetrace.util.NetworkUtils.isNetworkAvailable(this);
+        
+        if (hasInternet) {
+            // Enviar à API
+            APIService.getInstance(this).deleteContact(this, contactId, new APIService.APIServiceCallback() {
+                @Override
+                public void onSuccess(JSONObject response) {
+                    Toast.makeText(CadastroContatosActivity.this, "Contato excluído com sucesso!", Toast.LENGTH_SHORT).show();
+                    loadContactsFromApi(); // Recarregar lista
+                }
+
+                @Override
+                public void onError(String error) {
+                    Toast.makeText(CadastroContatosActivity.this, "Erro ao excluir contato: " + error, Toast.LENGTH_SHORT).show();
+                }
+            });
+        } else {
+            // Sem conexão - excluir apenas localmente (comportamento antigo)
+            addLocallyDeletedContactId(contactId);
+            loadContactsFromApi();
+            Toast.makeText(this, "Sem conexão. Exclusão será apenas local.", Toast.LENGTH_SHORT).show();
+        }
     }
 
     private java.util.Set<String> getLocallyDeletedContactIds() {

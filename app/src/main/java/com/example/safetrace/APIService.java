@@ -307,6 +307,8 @@ public class APIService {
                         // Extract user data directly from the response
                         String userId = response.has("id") ? String.valueOf(response.optInt("id")) : null;
                         String userName = response.optString("name", null);
+                        String userEmail = response.optString("email", null);
+                        String userPhone = response.optString("phone", null);
 
                         SharedPreferences prefs2 = context.getSharedPreferences("safetrace_prefs", Context.MODE_PRIVATE);
                         SharedPreferences.Editor editor = prefs2.edit();
@@ -320,6 +322,14 @@ public class APIService {
                             android.util.Log.d("APIService", "User name saved: " + userName);
                         } else {
                             android.util.Log.w("APIService", "User name not found in response");
+                        }
+                        if (userEmail != null && !userEmail.isEmpty()) {
+                            editor.putString("user_email", userEmail);
+                            android.util.Log.d("APIService", "User email saved: " + userEmail);
+                        }
+                        if (userPhone != null && !userPhone.isEmpty()) {
+                            editor.putString("user_phone", userPhone);
+                            android.util.Log.d("APIService", "User phone saved: " + userPhone);
                         }
                         editor.apply();
                     } catch (Exception e) {
@@ -539,6 +549,125 @@ public class APIService {
                 response -> callback.onSuccess(response),
                 error -> {
                     String message = "Failed to add recording";
+                    if (error.networkResponse != null && error.networkResponse.data != null) {
+                        try {
+                            String responseBody = new String(error.networkResponse.data, "utf-8");
+                            JSONObject data = new JSONObject(responseBody);
+                            message = data.optString("error", message);
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
+                    }
+                    callback.onError(message);
+                }) {
+            @Override
+            public Map<String, String> getHeaders() throws AuthFailureError {
+                Map<String, String> headers = new HashMap<>();
+                headers.put("Authorization", "Bearer " + token);
+                headers.put("Content-Type", "application/json");
+                return headers;
+            }
+        };
+
+        requestQueue.add(jsonObjectRequest);
+    }
+
+    public void updateUserProfile(Context context, String name, String email, String phone, String password, final APIServiceCallback callback) {
+        String url = BASE_API_URL + "auth/user";
+        JSONObject params = new JSONObject();
+        try {
+            if (name != null && !name.isEmpty()) {
+                params.put("name", name);
+            }
+            if (email != null && !email.isEmpty()) {
+                params.put("email", email);
+            }
+            if (phone != null && !phone.isEmpty()) {
+                params.put("phone", phone);
+            }
+            if (password != null && !password.isEmpty()) {
+                params.put("password", password);
+            }
+        } catch (JSONException e) {
+            callback.onError("JSON error building update profile payload");
+            return;
+        }
+
+        SharedPreferences prefs = context.getSharedPreferences("safetrace_prefs", Context.MODE_PRIVATE);
+        String token = prefs.getString("api_token", null);
+
+        if (token == null || token.isEmpty()) {
+            callback.onError("User not authenticated");
+            return;
+        }
+
+        JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.PUT, url, params,
+                response -> {
+                    try {
+                        // Atualizar dados locais após sucesso
+                        SharedPreferences prefs2 = context.getSharedPreferences("safetrace_prefs", Context.MODE_PRIVATE);
+                        SharedPreferences.Editor editor = prefs2.edit();
+                        
+                        if (name != null && !name.isEmpty()) {
+                            editor.putString("user_name", name);
+                        }
+                        if (email != null && !email.isEmpty()) {
+                            editor.putString("user_email", email);
+                        }
+                        if (phone != null && !phone.isEmpty()) {
+                            editor.putString("user_phone", phone);
+                        }
+                        editor.apply();
+                    } catch (Exception e) {
+                        android.util.Log.e("APIService", "Error updating local preferences", e);
+                    }
+                    callback.onSuccess(response);
+                },
+                error -> {
+                    String message = "Failed to update profile";
+                    if (error.networkResponse != null && error.networkResponse.data != null) {
+                        try {
+                            String responseBody = new String(error.networkResponse.data, "utf-8");
+                            JSONObject data = new JSONObject(responseBody);
+                            message = data.optString("error", message);
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
+                    }
+                    callback.onError(message);
+                }) {
+            @Override
+            public Map<String, String> getHeaders() throws AuthFailureError {
+                Map<String, String> headers = new HashMap<>();
+                headers.put("Authorization", "Bearer " + token);
+                headers.put("Content-Type", "application/json");
+                return headers;
+            }
+        };
+
+        requestQueue.add(jsonObjectRequest);
+    }
+
+    public void deleteContact(Context context, String contactId, final APIServiceCallback callback) {
+        String url = BASE_API_URL + "contact/" + contactId;
+
+        SharedPreferences prefs = context.getSharedPreferences("safetrace_prefs", Context.MODE_PRIVATE);
+        String token = prefs.getString("api_token", null);
+
+        if (token == null || token.isEmpty()) {
+            callback.onError("User not authenticated");
+            return;
+        }
+
+        if (contactId == null || contactId.isEmpty()) {
+            callback.onError("Contact ID is required");
+            return;
+        }
+
+        JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.DELETE, url, null,
+                response -> callback.onSuccess(response),
+                error -> {
+                    String message = "Failed to delete contact";
                     if (error.networkResponse != null && error.networkResponse.data != null) {
                         try {
                             String responseBody = new String(error.networkResponse.data, "utf-8");

@@ -40,6 +40,13 @@ public class HistoricoActivity extends AppCompatActivity implements NavigationVi
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        
+        // Verificar autenticação antes de continuar
+        if (!verificarAutenticacao()) {
+            redirecionarParaLogin();
+            return;
+        }
+        
         setContentView(R.layout.activity_historico);
 
         emergenciaService = EmergenciaService.getInstance(this);
@@ -48,6 +55,20 @@ public class HistoricoActivity extends AppCompatActivity implements NavigationVi
         setupDrawer();
         setupClickListeners();
         carregarEmergencias();
+    }
+    
+    private boolean verificarAutenticacao() {
+        SharedPreferences prefs = getSharedPreferences("safetrace_prefs", MODE_PRIVATE);
+        String token = prefs.getString("api_token", null);
+        String userId = prefs.getString("user_id", null);
+        return token != null && !token.isEmpty() && userId != null && !userId.isEmpty();
+    }
+    
+    private void redirecionarParaLogin() {
+        Intent intent = new Intent(HistoricoActivity.this, LoginActivity.class);
+        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+        startActivity(intent);
+        finish();
     }
 
     private void initializeViews() {

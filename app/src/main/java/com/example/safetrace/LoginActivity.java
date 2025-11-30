@@ -34,21 +34,51 @@ public class LoginActivity extends AppCompatActivity {
         // Verificar se já existe uma sessão ativa (token salvo)
         SharedPreferences prefs = getSharedPreferences("safetrace_prefs", MODE_PRIVATE);
         String token = prefs.getString("api_token", null);
+        String userId = prefs.getString("user_id", null);
         
-        if (token != null && !token.isEmpty()) {
-            // Usuário já está logado, redirecionar para MainActivity
-            android.util.Log.d("LoginActivity", "Token encontrado, redirecionando para MainActivity");
-            Intent intent = new Intent(LoginActivity.this, MainActivity.class);
-            startActivity(intent);
-            finish();
-            return;
-        }
-        
-        setContentView(R.layout.activity_login);
+        if (token != null && !token.isEmpty() && userId != null && !userId.isEmpty()) {
+            // Validar token fazendo uma chamada à API para verificar se ainda é válido
+            android.util.Log.d("LoginActivity", "Token encontrado, validando com a API...");
+            APIService.getInstance(this).getUserProfile(this, new APIService.APIServiceCallback() {
+                @Override
+                public void onSuccess(JSONObject response) {
+                    // Token válido, redirecionar para MainActivity
+                    android.util.Log.d("LoginActivity", "Token válido, redirecionando para MainActivity");
+                    Intent intent = new Intent(LoginActivity.this, MainActivity.class);
+                    startActivity(intent);
+                    finish();
+                }
 
+                @Override
+                public void onError(String error) {
+                    // Token inválido ou expirado, limpar dados e mostrar tela de login
+                    android.util.Log.d("LoginActivity", "Token inválido ou expirado: " + error);
+                    limparDadosUsuario();
+                    mostrarTelaLogin();
+                }
+            });
+        } else {
+            // Sem token ou user_id, mostrar tela de login
+            mostrarTelaLogin();
+        }
+    }
+    
+    private void mostrarTelaLogin() {
+        setContentView(R.layout.activity_login);
         initializeViews();
         setupClickListeners();
         setupBackPressedCallback();
+    }
+    
+    private void limparDadosUsuario() {
+        SharedPreferences prefs = getSharedPreferences("safetrace_prefs", MODE_PRIVATE);
+        prefs.edit()
+                .remove("api_token")
+                .remove("user_id")
+                .remove("user_name")
+                .remove("user_email")
+                .remove("user_phone")
+                .apply();
     }
 
     private void initializeViews() {

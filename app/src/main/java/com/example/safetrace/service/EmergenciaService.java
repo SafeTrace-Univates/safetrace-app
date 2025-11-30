@@ -371,10 +371,67 @@ public class EmergenciaService {
         SharedPreferences prefs = context.getSharedPreferences("safetrace_prefs", Context.MODE_PRIVATE);
         String emergenciasJson = prefs.getString("emergencias", "[]");
         
+        // Obter userId do usuário logado para filtrar emergências
+        String userIdLogado = prefs.getString("user_id", null);
+        if (userIdLogado == null || userIdLogado.isEmpty()) {
+            Log.w(TAG, "User ID não encontrado, retornando lista vazia");
+            return emergencias;
+        }
+        
         try {
             org.json.JSONArray emergenciasArray = new org.json.JSONArray(emergenciasJson);
             for (int i = 0; i < emergenciasArray.length(); i++) {
                 org.json.JSONObject emergenciaJson = emergenciasArray.getJSONObject(i);
+                
+                // Verificar se a emergência pertence ao usuário logado ou se ele é contato de emergência
+                String emergenciaUsuarioId = emergenciaJson.optString("usuarioId", "");
+                
+                // Carregar lista de notificados para verificar se o usuário está nela
+                java.util.List<String> notificadosIds = new java.util.ArrayList<>();
+                if (emergenciaJson.has("notificadosIds")) {
+                    try {
+                        org.json.JSONArray notificadosIdsArray = emergenciaJson.getJSONArray("notificadosIds");
+                        for (int j = 0; j < notificadosIdsArray.length(); j++) {
+                            // Aceitar tanto String quanto Integer
+                            Object idObj = notificadosIdsArray.get(j);
+                            String idStr = idObj != null ? String.valueOf(idObj) : null;
+                            if (idStr != null && !idStr.isEmpty()) {
+                                notificadosIds.add(idStr);
+                            }
+                        }
+                    } catch (org.json.JSONException e) {
+                        Log.w(TAG, "Erro ao carregar notificadosIds", e);
+                    }
+                }
+                
+                // Normalizar IDs para comparação (remover espaços e converter para string)
+                String userIdLogadoNormalizado = userIdLogado != null ? userIdLogado.trim() : "";
+                String emergenciaUsuarioIdNormalizado = emergenciaUsuarioId != null ? emergenciaUsuarioId.trim() : "";
+                
+                // Filtrar: apenas emergências do usuário logado OU onde ele é contato de emergência
+                boolean pertenceAoUsuario = emergenciaUsuarioIdNormalizado.equals(userIdLogadoNormalizado);
+                
+                // Verificar se o usuário está na lista de notificados (comparação normalizada)
+                boolean ehContatoEmergencia = false;
+                for (String notificadoId : notificadosIds) {
+                    String notificadoIdNormalizado = notificadoId != null ? notificadoId.trim() : "";
+                    if (notificadoIdNormalizado.equals(userIdLogadoNormalizado)) {
+                        ehContatoEmergencia = true;
+                        break;
+                    }
+                }
+                
+                Log.d(TAG, "Emergência " + emergenciaJson.optString("id", "?") + 
+                    " - Usuário emergência: " + emergenciaUsuarioIdNormalizado + 
+                    ", Usuário logado: " + userIdLogadoNormalizado + 
+                    ", Pertence: " + pertenceAoUsuario + 
+                    ", É contato: " + ehContatoEmergencia);
+                
+                if (!pertenceAoUsuario && !ehContatoEmergencia) {
+                    // Pular esta emergência - não pertence ao usuário logado
+                    Log.d(TAG, "Pulando emergência - não pertence ao usuário logado");
+                    continue;
+                }
                 
                 Emergencia emergencia = new Emergencia();
                 emergencia.setId(emergenciaJson.getString("id"));
@@ -419,19 +476,8 @@ public class EmergenciaService {
                 }
                 
                 // Carregar notificados (campos auxiliares, não fazem parte do ER model)
-                java.util.List<String> notificadosIds = new java.util.ArrayList<>();
                 java.util.List<String> notificadosNomes = new java.util.ArrayList<>();
-                if (emergenciaJson.has("notificadosIds")) {
-                    try {
-                        org.json.JSONArray notificadosIdsArray = emergenciaJson.getJSONArray("notificadosIds");
-                        for (int j = 0; j < notificadosIdsArray.length(); j++) {
-                            notificadosIds.add(notificadosIdsArray.getString(j));
-                        }
-                    } catch (org.json.JSONException e) {
-                        Log.w(TAG, "Erro ao carregar notificadosIds", e);
-                    }
-                }
-                emergencia.setNotificadosIds(notificadosIds);
+                emergencia.setNotificadosIds(notificadosIds); // Já carregado acima
                 
                 if (emergenciaJson.has("notificadosNomes")) {
                     try {
@@ -492,6 +538,7 @@ public class EmergenciaService {
             Log.e(TAG, "Erro ao carregar emergências", e);
         }
         
+        Log.d(TAG, "Carregadas " + emergencias.size() + " emergências para o usuário " + userIdLogado);
         return emergencias;
     }
 }
